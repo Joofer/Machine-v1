@@ -13,7 +13,7 @@ Wallet* wallet = new Wallet(); // Create a wallet for purchases
 ConnectionHandler* connection = new ConnectionHandler(); // Create MySQL connection class
 RuntimeListener* runtime = new RuntimeListener(); // Create runtime class to use some high-level functions, such as Buy function
 
-connection->ConnectToDatabase("tcp://127.0.1.1:3306", "user", "password", "database1"); // Connecting to database
+connection->ConnectToDatabase("tcp://127.0.1.1:3306", "user", "password", "database"); // Connecting to database
 runtime->Create(connection); // Creating new machine using previously established connection
 runtime->Pick(connection, id); // Picking which machine our Machine, ConnectionHandler and RuntimeListener classes should handle using its database id
 wallet->SetMoney(100); // Setting up wallet used for purchases
