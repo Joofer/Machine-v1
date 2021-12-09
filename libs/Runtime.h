@@ -59,10 +59,4 @@ public:
 	bool RefillIngredient(int id, Machine* machine, ConnectionHandler* handler);
 	bool RemoveProduct(int id, Machine* machine, ConnectionHandler* handler);
 	bool RemoveIngredient(int id, Machine* machine, ConnectionHandler* handler);
-
-	//
-
-	bool read_int(int& out);
-	bool read_double(double& out);
-	bool read_string(string& out);
 };

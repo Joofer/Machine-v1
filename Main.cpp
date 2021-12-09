@@ -113,7 +113,7 @@ int main()
 			runtime->PrintCoffee(machine);
 			if (machine->GetItemsCount() > 0) // Check if we have any items before making the customer choose product
 			{
-				if (runtime->read_string(action)) // Get product name
+				if (DataProcessing::read_string(action)) // Get product name
 				{
 					error = runtime->Buy(machine_id, wallet, machine, action, connection);
 

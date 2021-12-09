@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataProcessing.h" />
     <ClInclude Include="libs\BeverageMachine.h" />
     <ClInclude Include="libs\CoffeeMachine.h" />
     <ClInclude Include="libs\ConnectionHandler.h" />
@@ -32,6 +33,7 @@
     <ClCompile Include="BeverageMachine.cpp" />
     <ClCompile Include="CoffeeMachine.cpp" />
     <ClCompile Include="ConnectionHandler.cpp" />
+    <ClCompile Include="DataProcessing.cpp" />
     <ClCompile Include="Machine.cpp" />
     <ClCompile Include="MachineItem.cpp" />
     <ClCompile Include="Main.cpp" />

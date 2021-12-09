@@ -525,7 +525,7 @@ vector<string> ConnectionHandler::GetProducts(int id)
 		if (res.empty())
 			return { };
 
-		data = split(res, ";");
+		data = DataProcessing::split(res, ";");
 
 		return data;
 	}
@@ -572,8 +572,8 @@ map<string, int> ConnectionHandler::GetAllIngredients(int id)
 		if (ingr.empty() || quan.empty())
 			return { };
 
-		temp_ingredients = split(ingr, ";");
-		temp_quantity = split(quan, ";");
+		temp_ingredients = DataProcessing::split(ingr, ";");
+		temp_quantity = DataProcessing::split(quan, ";");
 
 		if (temp_ingredients.size() != temp_quantity.size())
 			return { };
@@ -616,8 +616,8 @@ map<string, int> ConnectionHandler::GetNeededIngredients(int id, const char* pro
 
 		if (k != -1)
 		{
-			result_ingredients = split(ingredients[k], ",");
-			result_quantities = split(quantities[k], ",");
+			result_ingredients = DataProcessing::split(ingredients[k], ",");
+			result_quantities = DataProcessing::split(quantities[k], ",");
 
 			for (int i = 0; i < result_ingredients.size(); i++)
 				res.insert(make_pair(result_ingredients[i], stoi(result_quantities[i])));
@@ -728,7 +728,7 @@ vector<string> ConnectionHandler::GetIngredients(int id)
 		if (res.empty())
 			return { };
 
-		ingredients = split(res, ";");
+		ingredients = DataProcessing::split(res, ";");
 
 		return ingredients;
 	}
@@ -750,7 +750,7 @@ vector<string> ConnectionHandler::GetQuantities(int id) // Get ingredients quant
 		if (res.empty())
 			return { };
 
-		data = split(res, ";");
+		data = DataProcessing::split(res, ";");
 
 		return data;
 	}
@@ -779,8 +779,8 @@ vector<map<string, int>> ConnectionHandler::GetIngredientsVector(int id)
 
 		for (int i = 0; i < names.size(); i++)
 		{
-			names_temp = split(names[i], ",");
-			quantities_temp = split(quantities[i], ",");
+			names_temp = DataProcessing::split(names[i], ",");
+			quantities_temp = DataProcessing::split(quantities[i], ",");
 
 			if (names_temp.size() != quantities_temp.size())
 				return { };
@@ -814,7 +814,7 @@ vector<int> ConnectionHandler::GetQuantity(int id) // Get items quantities
 		if (res.empty())
 			return { };
 
-		data = split(res, ";");
+		data = DataProcessing::split(res, ";");
 
 		for (int i = 0; i < data.size(); i++)
 			data_d.push_back(stoi(data[i]));
@@ -840,7 +840,7 @@ vector<double> ConnectionHandler::GetPrices(int id)
 		if (res.empty())
 			return { };
 
-		data = split(res, ";");
+		data = DataProcessing::split(res, ";");
 
 		for (int i = 0; i < data.size(); i++)
 			data_d.push_back(stod(data[i]));
@@ -1096,7 +1096,7 @@ bool ConnectionHandler::TakeItem(int id, const char* name, int quantity)
 				if (quantities[i] >= quantity)
 				{
 					quantities[i] -= quantity;
-					q = back_split(quantities, ";");
+					q = DataProcessing::back_split(quantities, ";");
 					UpdateString(id, "quantity", q.c_str());
 					return true;
 				}
@@ -1117,15 +1117,14 @@ bool ConnectionHandler::TakeItem(int id, const char* name, int quantity)
 
 bool ConnectionHandler::TakeIngredient(int id, const char* name, int quantity)
 {
-	// map<string, int> ingredients;
 	vector<string> ingredients;
 	vector<string> quantities;
 	string res;
 
 	if (IsIdExisting(id)) // Check if id is existing
 	{
-		ingredients = split(GetMachineIngredients(id), ";");
-		quantities = split(GetMachineIngredientsQuantities(id), ";");
+		ingredients = DataProcessing::split(GetMachineIngredients(id), ";");
+		quantities = DataProcessing::split(GetMachineIngredientsQuantities(id), ";");
 
 		if (ingredients.empty())
 			return false;
@@ -1139,7 +1138,7 @@ bool ConnectionHandler::TakeIngredient(int id, const char* name, int quantity)
 			}
 		}
 
-		res = back_split(quantities, ";");
+		res = DataProcessing::back_split(quantities, ";");
 
 		UpdateString(id, "quantity", res.c_str(), "ingredients");
 
@@ -1205,11 +1204,11 @@ bool ConnectionHandler::DeleteItem(int id, const char* name)
 		data_ingredients_quantity.erase(data_ingredients_quantity.begin() + pos);
 		data_product_prices.erase(data_product_prices.begin() + pos);
 
-		products = back_split(data_products, ";");
-		quantity = back_split(data_quantity, ";");
-		ingredients = back_split(data_ingredients, ";");
-		ingredients_quantity = back_split(data_ingredients_quantity, ";");
-		product_prices = back_split(data_product_prices, ";");
+		products = DataProcessing::back_split(data_products, ";");
+		quantity = DataProcessing::back_split(data_quantity, ";");
+		ingredients = DataProcessing::back_split(data_ingredients, ";");
+		ingredients_quantity = DataProcessing::back_split(data_ingredients_quantity, ";");
+		product_prices = DataProcessing::back_split(data_product_prices, ";");
 
 		if (!UpdateRow(id, products.c_str(), quantity.c_str(), ingredients.c_str(), ingredients_quantity.c_str(), product_prices.c_str()))
 			return false;
@@ -1232,8 +1231,8 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 
 	if (IsIdExisting(id))
 	{
-		data_ingredients = split(GetMachineIngredients(id), ";");
-		data_quantities = split(GetMachineIngredientsQuantities(id), ";");
+		data_ingredients = DataProcessing::split(GetMachineIngredients(id), ";");
+		data_quantities = DataProcessing::split(GetMachineIngredientsQuantities(id), ";");
 
 		if (data_ingredients.empty() || data_quantities.empty())
 		{
@@ -1259,8 +1258,8 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 
 		data_quantities.erase(data_quantities.begin() + pos);
 
-		ingredients = back_split(data_ingredients, ";");
-		quantities = back_split(data_quantities, ";");
+		ingredients = DataProcessing::back_split(data_ingredients, ";");
+		quantities = DataProcessing::back_split(data_quantities, ";");
 
 		if (!UpdateString(id, "ingredients", ingredients.c_str(), "ingredients"))
 			return false;
@@ -1400,68 +1399,3 @@ bool ConnectionHandler::CheckRowStructure(int id)
 
 	return true;
 }
-
-//
-
-vector<string> ConnectionHandler::split(string s, string delimiter)
-{
-	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-	string token;
-	vector<string> res;
-
-	while ((pos_end = s.find(delimiter, pos_start)) != string::npos)
-	{
-		token = s.substr(pos_start, pos_end - pos_start);
-		pos_start = pos_end + delim_len;
-		res.push_back(token);
-	}
-
-	res.push_back(s.substr(pos_start));
-	return res;
-}
-
-string ConnectionHandler::back_split(vector<string> v, string delimiter)
-{
-	string s = "";
-	size_t k = 0;
-
-	while (k < v.size())
-	{
-		s += v[k];
-		if (k < v.size() - 1) s += ";";
-		k++;
-	}
-
-	return s;
-}
-
-string ConnectionHandler::back_split(vector<int> v, string delimiter)
-{
-	string s = "";
-	size_t k = 0;
-
-	while (k < v.size())
-	{
-		s += to_string(v[k]);
-		if (k < v.size() - 1) s += ";";
-		k++;
-	}
-
-	return s;
-}
-
-string ConnectionHandler::back_split(vector<double> v, string delimiter)
-{
-	string s = "";
-	size_t k = 0;
-
-	while (k < v.size())
-	{
-		s += to_string(v[k]);
-		if (k < v.size() - 1) s += ";";
-		k++;
-	}
-
-	return s;
-}
-

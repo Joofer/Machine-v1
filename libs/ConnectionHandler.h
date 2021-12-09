@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Machine.h"
+#include "DataProcessing.h"
 #include "mysql_connection.h"
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -91,11 +92,4 @@ public:
 	// Callbacks
 
 	void OnConnectionError(); // Checks if MySQL connection is ok
-
-	// Variable processing functions
-
-	vector<string> split(string s, string delimiter);
-	string back_split(vector<string> v, string delimiter);
-	string back_split(vector<int> v, string delimiter);
-	string back_split(vector<double> v, string delimiter);
 };

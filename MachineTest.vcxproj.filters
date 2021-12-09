@@ -39,6 +39,9 @@
     <ClInclude Include="libs\WendingMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataProcessing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BeverageMachine.cpp">
@@ -66,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WendingMachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
