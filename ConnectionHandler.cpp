@@ -20,10 +20,11 @@ ConnectionHandler::ConnectionHandler(const char* server, const char* username, c
 	ConnectToDatabase(server, username, password, database); // We first null all the private variables and then try to connect
 }
 
-bool ConnectionHandler::ConstructDataTable()
+bool ConnectionHandler::ConstructDataTable(bool checkPurchases)
 {
 	char statement_machine[] = "CREATE TABLE IF NOT EXISTS `data`( `id` INT NOT NULL AUTO_INCREMENT,  `name` varchar(255) NOT NULL, `type` VARCHAR(20) NOT NULL, `products` TEXT NOT NULL, `quantity` TEXT NOT NULL, `ingredients` TEXT NOT NULL, `ingredients_quantity` TEXT NOT NULL, `product_prices` TEXT NOT NULL, `is_on` TINYINT(1) DEFAULT NULL, PRIMARY KEY(`id`)) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci";
 	char statement_ingredients[] = "CREATE TABLE IF NOT EXISTS `ingredients`( `id` INT NOT NULL AUTO_INCREMENT, `ingredients` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL, `quantity` TEXT NOT NULL, PRIMARY KEY(`id`)) ENGINE = InnoDB AUTO_INCREMENT = 6 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci";
+	char statement_purchases[] = "CREATE TABLE `purchases` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `machine_id` int NOT NULL, `items` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL, `prices` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL, `total` decimal(8, 2) NOT NULL, `date` date NOT NULL, `time` time NOT NULL, PRIMARY KEY(`id`)) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci";
 
 	try
 	{
@@ -45,6 +46,20 @@ bool ConnectionHandler::ConstructDataTable()
 	{
 		// cout << "Error: " << e.what() << endl;
 		return false;
+	}
+
+	if (checkPurchases)
+	{
+		try
+		{
+			stmt = con->createStatement();
+			stmt->execute(statement_purchases);
+		}
+		catch (sql::SQLException e)
+		{
+			// cout << "Error: " << e.what() << endl;
+			return false;
+		}
 	}
 
 	return true;
@@ -114,12 +129,12 @@ int ConnectionHandler::GetInt(int id, const char* name)
 	return res;
 }
 
-bool ConnectionHandler::UpdateString(int id, const char* name, const char* s, const char* table)
+bool ConnectionHandler::UpdateString(uint64_t id, const char* name, const char* s, const char* table)
 {
 	char statement[16384];
 
 	stmt = con->createStatement();
-	sprintf_s(statement, "UPDATE %s SET %s = \"%s\" WHERE id = %d", table, name, s, id);
+	sprintf_s(statement, "UPDATE %s SET %s = \"%s\" WHERE id = %llu", table, name, s, id);
 
 	try
 	{
@@ -134,12 +149,52 @@ bool ConnectionHandler::UpdateString(int id, const char* name, const char* s, co
 	return true;
 }
 
-bool ConnectionHandler::UpdateInt(int id, const char* name, int v, const char* table)
+bool ConnectionHandler::UpdateInt(uint64_t id, const char* name, int v, const char* table)
 {
 	char statement[255];
 
 	stmt = con->createStatement();
-	sprintf_s(statement, "UPDATE %s SET %s = %d WHERE id = %d", table, name, v, id);
+	sprintf_s(statement, "UPDATE %s SET %s = %i WHERE id = %llu", table, name, v, id);
+
+	try
+	{
+		stmt->execute(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		return false;
+	}
+
+	return true;
+}
+
+bool ConnectionHandler::UpdateDouble(uint64_t id, const char* name, double v, const char* table)
+{
+	char statement[255];
+
+	stmt = con->createStatement();
+	sprintf_s(statement, "UPDATE %s SET %s = %g WHERE id = %llu", table, name, v, id);
+
+	try
+	{
+		stmt->execute(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		return false;
+	}
+
+	return true;
+}
+
+bool ConnectionHandler::UpdateUInt64(uint64_t id, const char* name, uint64_t v, const char* table)
+{
+	char statement[255];
+
+	stmt = con->createStatement();
+	sprintf_s(statement, "UPDATE %s SET %s = %llu WHERE id = %llu", table, name, v, id);
 
 	try
 	{
@@ -224,6 +279,28 @@ bool ConnectionHandler::Insert(const char* name, const char* type, const char* p
 	return true;
 }
 
+bool ConnectionHandler::Insert(int machine_id, const char* items, const char* prices, double total, const char* date, const char* time)
+{
+	// Create machine row
+
+	char statement[1024];
+
+	stmt = con->createStatement();
+	sprintf_s(statement, "INSERT INTO purchases (`machine_id`, `items`, `prices`, `total`, `date`, `time`) VALUES ('%i', '%s', '%s', '%g', '%s', '%s')", machine_id, items, prices, total, date, time);
+
+	try
+	{
+		stmt->execute(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		return false;
+	}
+
+	return true;
+}
+
 bool ConnectionHandler::Delete(int id, const char* table)
 {
 	char statement[16384];
@@ -251,7 +328,16 @@ bool ConnectionHandler::CheckQuery(int id)
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "SELECT * FROM data WHERE id = %d", id);
-	result = stmt->executeQuery(statement);
+
+	try
+	{
+		result = stmt->executeQuery(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		return false;
+	}
 
 	if (!result->next())
 	{
@@ -277,11 +363,19 @@ bool ConnectionHandler::CheckQuery(int id)
 bool ConnectionHandler::GetMaxId(int& out_id, const char* table)
 {
 	char statement[255];
-	unsigned int count = 0;
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "SELECT MAX(id) FROM %s", table);
-	result = stmt->executeQuery(statement);
+
+	try
+	{
+		result = stmt->executeQuery(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		return false;
+	}
 
 	if (!result->next())
 	{
@@ -290,6 +384,36 @@ bool ConnectionHandler::GetMaxId(int& out_id, const char* table)
 	}
 
 	out_id = result->getInt(1);
+
+	delete result;
+
+	return true;
+}
+
+bool ConnectionHandler::GetMaxId(uint64_t& out_id, const char* table)
+{
+	char statement[255];
+
+	stmt = con->createStatement();
+	sprintf_s(statement, "SELECT MAX(id) FROM %s", table);
+
+	try
+	{
+		result = stmt->executeQuery(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		return false;
+	}
+
+	if (!result->next())
+	{
+		cout << "Error while getting data from products." << endl;
+		return false;
+	}
+
+	out_id = result->getUInt(1);
 
 	delete result;
 
@@ -316,7 +440,7 @@ bool ConnectionHandler::ConnectToDatabase(const char* server, const char* userna
 	{
 		cout << "Error while checking database structure. Creating datatable..." << endl;
 		
-		if (!ConstructDataTable())
+		if (!ConstructDataTable(true)) // In this case we use purchase logging so we need to set checkPurchases to true
 		{
 			cout << "Error while creating datatable. Additional manual data check and correction may be needed. Full program reload is recommended." << endl;
 
@@ -423,7 +547,16 @@ map<string, int> ConnectionHandler::GetAllIngredients(int id)
 	{
 		pstmt = con->prepareStatement("SELECT ingredients, quantity FROM ingredients WHERE id = ?");
 		pstmt->setInt(1, id);
-		result = pstmt->executeQuery();
+
+		try
+		{
+			result = pstmt->executeQuery();
+		}
+		catch (sql::SQLException e)
+		{
+			// cout << "Error: " << e.what() << endl;
+			return { };
+		}
 
 		if (!result->next())
 		{
@@ -510,7 +643,16 @@ string ConnectionHandler::GetMachineIngredients(int id)
 	{
 		pstmt = con->prepareStatement("SELECT ingredients FROM ingredients WHERE id = ?");
 		pstmt->setInt(1, id);
-		result = pstmt->executeQuery();
+
+		try
+		{
+			result = pstmt->executeQuery();
+		}
+		catch (sql::SQLException e)
+		{
+			// cout << "Error: " << e.what() << endl;
+			return { };
+		}
 
 		if (!result->next())
 		{
@@ -541,7 +683,16 @@ string ConnectionHandler::GetMachineIngredientsQuantities(int id)
 	{
 		pstmt = con->prepareStatement("SELECT quantity FROM ingredients WHERE id = ?");
 		pstmt->setInt(1, id);
-		result = pstmt->executeQuery();
+
+		try
+		{
+			result = pstmt->executeQuery();
+		}
+		catch (sql::SQLException e)
+		{
+			// cout << "Error: " << e.what() << endl;
+			return { };
+		}
 
 		if (!result->next())
 		{
@@ -1125,6 +1276,14 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 	}
 }
 
+bool ConnectionHandler::LogPurchase(int id, const char* items, const char* prices, double total, const char* date, const char* time)
+{
+	if (!Insert(id, items, prices, total, date, time))
+		return false;
+
+	return true;
+}
+
 //
 
 bool ConnectionHandler::IsColumnExisting(const char* column, const char* table)
@@ -1161,7 +1320,7 @@ bool ConnectionHandler::IsDataTableExisting(const char* table, vector<const char
 	{
 		if (!IsColumnExisting(columns[i], table))
 		{
-			// cout << "Error while checking datatable." << endl;
+			cout << "Error while checking datatable. Column " << columns[i] << " does not exist." << endl;
 			return false;
 		}
 	}
@@ -1176,7 +1335,7 @@ bool ConnectionHandler::IsIdExisting(int id)
 	return false;
 }
 
-bool ConnectionHandler::CheckDBStructure()
+bool ConnectionHandler::CheckDBStructure(bool checkPurchases)
 {
 	if (!IsDataTableExisting("data",
 		{
@@ -1199,6 +1358,19 @@ bool ConnectionHandler::CheckDBStructure()
 			"quantity"
 		})
 		) return false;
+
+	if (checkPurchases)
+		if (!IsDataTableExisting("purchases",
+			{
+				"id",
+				"machine_id",
+				"items",
+				"prices",
+				"total",
+				"date",
+				"time"
+			})
+			) return false;
 
 	return true;
 }

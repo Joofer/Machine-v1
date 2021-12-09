@@ -5,6 +5,9 @@
 #include "BeverageMachine.h"
 #include "WendingMachine.h"
 #include "ConnectionHandler.h"
+#include <chrono>
+#include <ctime>
+#include <sstream>
 
 using namespace std;
 
@@ -15,7 +18,8 @@ enum class Error
 	NO_QUANTITY,
 	NO_CONNECTION,
 	ERROR_WHILE_MACHINE_CREATION,
-	ERROR_WHILE_DELETING_MACHINE
+	ERROR_WHILE_DELETING_MACHINE,
+	ERROR_WHILE_LOGGING_PURCHASE
 };
 
 const int MAX_ITEM_QUANTITY = 100;

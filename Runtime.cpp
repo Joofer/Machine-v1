@@ -177,6 +177,23 @@ bool RuntimeListener::Delete(ConnectionHandler* connection)
 int RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler)
 {
 	map<string, int> ingredients;
+	string prices;
+	char price[255];
+
+	// Date and time for logging
+
+	char date_str[255];
+	char time_str[255];
+	
+	struct tm _time;
+	time_t _time_now = time(0);
+	localtime_s(&_time, &_time_now);
+	strftime(date_str, sizeof(date_str), "%Y-%m-%d", &_time);
+	strftime(time_str, sizeof(time_str), "%X", &_time);
+
+	// cout << "Date: " << date_str << " time: " << time_str << "." << endl;
+
+	//
 
 	if (machine->FindId(item) != -1)
 	{
@@ -192,9 +209,26 @@ int RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, 
 				{
 					ingredients = handler->GetNeededIngredients(id, item.c_str());
 
+					// Getting price
+					// for (int i = 0; i < 1; i++) // For multiple products
+					// {
+					// 	sprintf_s(price, "%g", machine->FindItem(item)->GetPrice());
+					// 
+					// 	prices += price;
+					// 	if (i != 1)
+					// 		prices += ";";
+					// }
+					sprintf_s(price, "%g", machine->FindItem(item)->GetPrice());
+					prices = price;
+					//
+
 					for (map<string, int>::iterator i = ingredients.begin(); i != ingredients.end(); i++)
 						if (!handler->TakeIngredient(id, (i->first).c_str(), i->second))
 							cout << "Error while updating database with values: " << id << "\t" << i->first << "\t" << i->second << endl;
+
+					
+					if (!handler->LogPurchase(id, item.c_str(), prices.c_str(), machine->FindItem(item)->GetPrice(), date_str, time_str))
+						cout << "Error while logging purchase." << endl;
 
 					wallet->TakeMoney(machine->FindItem(item)->GetPrice());
 					return -1;
@@ -239,6 +273,9 @@ void RuntimeListener::ThrowError(Error error)
 		break;
 	case Error::ERROR_WHILE_DELETING_MACHINE:
 		cout << "Error while deleting a machine." << endl;
+		break;
+	case Error::ERROR_WHILE_LOGGING_PURCHASE:
+		cout << "Error while logging purchase." << endl;
 		break;
 	default:
 		cout << "Error while processing." << endl;

@@ -1,9 +1,10 @@
 // TODO
-// 1. Add machine picking menu
-// 2. Add an ability to create a new machine in-runtime
-// 3. Add purchases logging
-// 4. Restructure ConnectionHandler class
-// 5. Wallets via hash files and database
+// 1. Add machine picking menu                                // Done
+// 2. Add an ability to create a new machine in-runtime       // Done
+// 3. Add purchases logging                                   // Done
+// 4. Restructure ConnectionHandler class                     //
+// 5. Wallets via hash files and database                     //
+// 6. Add error logging switcher using define                 //
 
 #include "libs/CoffeeMachine.h"
 #include "libs/Wallet.h"

@@ -22,21 +22,28 @@ private:
 	// Query functions
 	string GetString(int id, const char* name);
 	int GetInt(int id, const char* name);
-	bool UpdateString(int id, const char* name, const char* s, const char* table = "data");
-	bool UpdateInt(int id, const char* name, int v, const char* table = "data");
+	// bool UpdateString(int id, const char* name, const char* s, const char* table = "data");
+	// bool UpdateInt(int id, const char* name, int v, const char* table = "data");
+	// bool UpdateDouble(int id, const char* name, double v, const char* table = "data");
+	bool UpdateString(uint64_t id, const char* name, const char* s, const char* table = "data");
+	bool UpdateInt(uint64_t id, const char* name, int v, const char* table = "data");
+	bool UpdateDouble(uint64_t id, const char* name, double v, const char* table = "data");
+	bool UpdateUInt64(uint64_t id, const char* name, uint64_t v, const char* table = "data");
 	bool UpdateRow(int id, const char* products, const char* quantity, const char* product_prices); // Update row for non-ingredient machine
 	bool UpdateRow(int id, const char* products, const char* quantity, const char* ingredients, const char* ingredients_quantity, const char* product_prices); // Update row for ingredient machine
 	bool Insert(const char* name, const char* type, const char* products, const char* quantity, const char* ingredients, const char* ingredients_quantity, const char* product_prices, const char* ingredient_names, const char* ingredients_quantities, int& out_id); // Insert a row to the table, sets out_id to -1 if an error occured
+	bool Insert(int machine_id, const char* items, const char* prices, double total, const char* date, const char* time); // Insert a row in purchase logging
 	bool Delete(int id, const char* table = "data"); // Delete machine
 	bool CheckQuery(int id); // Check if a query exists
 	bool GetMaxId(int& out_id, const char* table = "data");
+	bool GetMaxId(uint64_t& out_id, const char* table = "data");
 public:
 
 	// Constructors
 
 	ConnectionHandler();
 	ConnectionHandler(const char* server, const char* username, const char* password, const char* database);
-	bool ConstructDataTable(); // Construct a datatable if one isn't presented
+	bool ConstructDataTable(bool checkPurchases = false); // Construct a datatable if one isn't presented
 
 	// Connection functions
 
@@ -71,13 +78,14 @@ public:
 	bool TakeIngredient(int id, const char* name, int quantity); // Take an ingredient from machine
 	bool DeleteItem(int id, const char* name); // Delete an item
 	bool DeleteIngredient(int id, const char* name); // Delete an ingredient
+	bool LogPurchase(int id, const char* items, const char* prices, double total, const char* date, const char* time); // Log purchase
 
 	// Checking functions
 
 	bool IsColumnExisting(const char* column, const char* table); // Checks if a column exists
 	bool IsDataTableExisting(const char* table, vector<const char*> columns); // Checks if a datatable exists and all the columns needed are presented there
 	bool IsIdExisting(int id); // Checks if a machine with id exists
-	bool CheckDBStructure();
+	bool CheckDBStructure(bool checkPurchases = false);
 	bool CheckRowStructure(int id); // Checks if a row is correct in machine and ingredients tables, all strings are by data-quantity equal
 
 	// Callbacks
