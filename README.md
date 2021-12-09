@@ -23,7 +23,7 @@ string item = "Cappuccino";
 int error; // Variable for storing errors
 error = runtime->Buy(id, wallet, coffee_machine, item, connection); // Buy an item
 ```
-# Full list of functions
+# List of functions
 Machine() - Create a new machine
 CoffeeMachine(), BeverageMachine(), WendingMachine() - Create a new specific machine
 | Set | Get |
