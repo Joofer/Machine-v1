@@ -12,11 +12,12 @@ Machine* coffee_machine = new CoffeeMachine(); // Creating a new machine of type
 Wallet* wallet = new Wallet(); // Create a wallet for purchases
 ConnectionHandler* connection = new ConnectionHandler(); // Create MySQL connection class
 RuntimeListener* runtime = new RuntimeListener(); // Create runtime class to use some high-level functions, such as Buy function
+int id; // Machine's id
 
 connection->ConnectToDatabase("tcp://127.0.1.1:3306", "user", "password", "database"); // Connecting to database
 runtime->Create(connection); // Creating new machine using previously established connection
 runtime->Pick(connection, id); // Picking which machine our Machine, ConnectionHandler and RuntimeListener classes should handle using its database id
-wallet->SetMoney(100); // Setting up wallet used for purchases
+wallet->SetMoney(100); // Setting up the wallet used for purchases
 UpdateData(id, connection, wallet, coffee_machine); // Loading up machine with data got from database, data is stored in Machine (Coffee Machine) class
 
 string item = "Cappuccino";
