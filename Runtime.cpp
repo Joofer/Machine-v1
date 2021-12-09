@@ -39,19 +39,19 @@ bool RuntimeListener::Connect(ConnectionHandler* connection)
 	string database;
 
 	cout << "Server: ";
-	if (!DataProcessing::read_string(server))
+	if (!dp::read_string(server))
 		return false;
 
 	cout << "User: ";
-	if (!DataProcessing::read_string(user))
+	if (!dp::read_string(user))
 		return false;
 
 	cout << "Password: ";
-	if (!DataProcessing::read_string(password))
+	if (!dp::read_string(password))
 		return false;
 
 	cout << "Database: ";
-	if (!DataProcessing::read_string(database))
+	if (!dp::read_string(database))
 		return false;
 
 	if (connection->ConnectToDatabase(server.c_str(), user.c_str(), password.c_str(), database.c_str())) // Connecting to database
@@ -70,7 +70,7 @@ bool RuntimeListener::Pick(ConnectionHandler* connection, int& out_id)
 	int id;
 
 	cout << "Machine id: ";
-	if (!DataProcessing::read_int(id))
+	if (!dp::read_int(id))
 		return false;
 
 	if (connection->IsIdExisting(id))
@@ -97,11 +97,11 @@ bool RuntimeListener::Create(ConnectionHandler* connection)
 		<< "=====================================" << endl;
 
 	cout << "Machine name: ";
-	if (!DataProcessing::read_string(name))
+	if (!dp::read_string(name))
 		return false;
 
 	cout << "Machine type (Beverage Machine - 1, Coffee Machine - 2, Wending Machine - 3): ";
-	if (!DataProcessing::read_int(temp_type))
+	if (!dp::read_int(temp_type))
 		return false;
 
 	if (temp_type < 1 || temp_type > 3)
@@ -148,7 +148,7 @@ bool RuntimeListener::Delete(ConnectionHandler* connection)
 	int id;
 
 	cout << "Machine id: ";
-	if (!DataProcessing::read_int(id))
+	if (!dp::read_int(id))
 		return false;
 	
 	if (connection->IsIdExisting(id))
@@ -450,7 +450,7 @@ bool RuntimeListener::SetName(int id, Machine* machine, ConnectionHandler* handl
 	PrintName(machine);
 
 	cout << "New name: ";
-	if (!DataProcessing::read_string(name))
+	if (!dp::read_string(name))
 		return false;
 
 	return handler->SetName(id, name.c_str());
@@ -476,7 +476,7 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 		<< "\tADD PRODUCT:" << endl;
 
 	cout << "Product type (Beverage Machine - 1, Coffee Machine - 2, Wending Machine - 3): ";
-	if (!DataProcessing::read_int(product_type_number))
+	if (!dp::read_int(product_type_number))
 		return false;
 
 	switch (product_type_number)
@@ -496,7 +496,7 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 	}
 	
 	cout << "Product name (without spaces): ";
-	if (!DataProcessing::read_string(product_name))
+	if (!dp::read_string(product_name))
 		return false;
 
 	if (product_type_number == 2)
@@ -511,7 +511,7 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 		ingredients = dynamic_cast<CoffeeMachine*>(machine)->GetIngredients();
 
 		cout << "Ingredients quantity: ";
-		if (!DataProcessing::read_int(product_ingredients_count))
+		if (!dp::read_int(product_ingredients_count))
 			return false;
 
 		PrintIngredients(machine);
@@ -519,7 +519,7 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 		for (int i = 0; i < product_ingredients_count; i++)
 		{
 			cout << "Ingredient index " << i + 1 << ": ";
-			if (!DataProcessing::read_int(ingredient_index))
+			if (!dp::read_int(ingredient_index))
 				return false;
 
 			if (ingredient_index <= ingredients.size() && ingredient_index > 0)
@@ -540,7 +540,7 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 				product_ingredients += product_ingredient_temp;
 
 			cout << "Quantity: ";
-			if (!DataProcessing::read_int(product_ingredient_quantity_temp))
+			if (!dp::read_int(product_ingredient_quantity_temp))
 				return false;
 
 			if (product_ingredient_quantity_temp <= 0 || product_ingredient_quantity_temp >= MAX_INGREDIENT_QUANTITY) // Check if ingredient quantity input is correct
@@ -555,11 +555,11 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 	}
 
 	cout << "Product quantity: ";
-	if (!DataProcessing::read_int(product_quantity))
+	if (!dp::read_int(product_quantity))
 		return false;
 
 	cout << "Product price: ";
-	if (!DataProcessing::read_double(product_price))
+	if (!dp::read_double(product_price))
 		return false;
 
 	if (product_quantity > 0 && product_quantity < MAX_ITEM_QUANTITY)
@@ -594,11 +594,11 @@ bool RuntimeListener::AddIngredient(int id, Machine* machine, ConnectionHandler*
 		<< "\tADD INGREDIENT:" << endl;
 
 	cout << "Ingredient name (without spaces): ";
-	if (!DataProcessing::read_string(ingredient_name))
+	if (!dp::read_string(ingredient_name))
 		return false;
 
 	cout << "Ingredient quantity: ";
-	if (!DataProcessing::read_int(ingredient_quantity))
+	if (!dp::read_int(ingredient_quantity))
 		return false;
 
 	for (map<string, int>::iterator i = ingredients.begin(); i != ingredients.end(); i++)
@@ -634,7 +634,7 @@ bool RuntimeListener::RefillItem(int id, Machine* machine, ConnectionHandler* ha
 	PrintProducts(machine);
 
 	cout << "Item index: ";
-	if (!DataProcessing::read_int(item_index))
+	if (!dp::read_int(item_index))
 		return false;
 
 	if (item_index <= products.size() && item_index > 0)
@@ -643,7 +643,7 @@ bool RuntimeListener::RefillItem(int id, Machine* machine, ConnectionHandler* ha
 		advance(iter, item_index - 1); // Decreasing iterator position by item_index picked - 1, as earlier it was increased
 
 		cout << "Quantity: ";
-		if (!DataProcessing::read_int(quantity)) // There may be some checking
+		if (!dp::read_int(quantity)) // There may be some checking
 			return false;
 
 		return handler->TakeItem(id, (machine->GetItemById(item_index - 1)->Get()).c_str(), -quantity);
@@ -673,7 +673,7 @@ bool RuntimeListener::RefillIngredient(int id, Machine* machine, ConnectionHandl
 	PrintIngredients(machine);
 
 	cout << "Ingredient index: ";
-	if (!DataProcessing::read_int(ingredient_index))
+	if (!dp::read_int(ingredient_index))
 		return false;
 
 	if (ingredient_index <= ingredients.size() && ingredient_index > 0)
@@ -682,7 +682,7 @@ bool RuntimeListener::RefillIngredient(int id, Machine* machine, ConnectionHandl
 		advance(iter, ingredient_index - 1); // Decreasing iterator position by ingredient_index picked - 1, as earlier it was increased
 
 		cout << "Quantity: ";
-		if (!DataProcessing::read_int(ingredient_quantity)) // There may be some checking
+		if (!dp::read_int(ingredient_quantity)) // There may be some checking
 			return false;
 
 		if (ingredient_quantity > 0 && ingredients[iter->first] + ingredient_quantity < MAX_INGREDIENT_QUANTITY) // Check if ingredient quantity input is correct
@@ -704,7 +704,7 @@ bool RuntimeListener::RemoveProduct(int id, Machine* machine, ConnectionHandler*
 	cout << endl;
 
 	cout << "Item index: ";
-	if (!DataProcessing::read_int(item_index))
+	if (!dp::read_int(item_index))
 		return false;
 
 	return handler->DeleteItem(id, (machine->GetItemById(item_index - 1)->Get()).c_str()); // Decreasing iterator position by item_index picked - 1, as earlier it was increased
@@ -728,7 +728,7 @@ bool RuntimeListener::RemoveIngredient(int id, Machine* machine, ConnectionHandl
 	PrintIngredients(machine);
 
 	cout << "Ingredient index: ";
-	if (!DataProcessing::read_int(ingredient_index))
+	if (!dp::read_int(ingredient_index))
 		return false;
 
 	if (ingredient_index <= ingredients.size() && ingredient_index > 0)

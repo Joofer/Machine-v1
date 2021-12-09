@@ -2,7 +2,7 @@
 
 //
 
-vector<string> DataProcessing::split(string s, string delimiter)
+vector<string> dp::split(string s, string delimiter)
 {
 	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
 	string token;
@@ -19,7 +19,7 @@ vector<string> DataProcessing::split(string s, string delimiter)
 	return res;
 }
 
-string DataProcessing::back_split(vector<string> v, string delimiter)
+string dp::back_split(vector<string> v, string delimiter)
 {
 	string s = "";
 	size_t k = 0;
@@ -34,7 +34,7 @@ string DataProcessing::back_split(vector<string> v, string delimiter)
 	return s;
 }
 
-string DataProcessing::back_split(vector<int> v, string delimiter)
+string dp::back_split(vector<int> v, string delimiter)
 {
 	string s = "";
 	size_t k = 0;
@@ -49,7 +49,7 @@ string DataProcessing::back_split(vector<int> v, string delimiter)
 	return s;
 }
 
-string DataProcessing::back_split(vector<double> v, string delimiter)
+string dp::back_split(vector<double> v, string delimiter)
 {
 	string s = "";
 	size_t k = 0;
@@ -66,7 +66,7 @@ string DataProcessing::back_split(vector<double> v, string delimiter)
 
 //
 
-bool DataProcessing::read_int(int& out)
+bool dp::read_int(int& out)
 {
 	int i;
 
@@ -85,7 +85,7 @@ bool DataProcessing::read_int(int& out)
 	return true;
 }
 
-bool DataProcessing::read_double(double& out)
+bool dp::read_double(double& out)
 {
 	double i;
 
@@ -104,7 +104,7 @@ bool DataProcessing::read_double(double& out)
 	return true;
 }
 
-bool DataProcessing::read_string(string& out)
+bool dp::read_string(string& out)
 {
 	string s;
 

@@ -525,7 +525,7 @@ vector<string> ConnectionHandler::GetProducts(int id)
 		if (res.empty())
 			return { };
 
-		data = DataProcessing::split(res, ";");
+		data = dp::split(res, ";");
 
 		return data;
 	}
@@ -572,8 +572,8 @@ map<string, int> ConnectionHandler::GetAllIngredients(int id)
 		if (ingr.empty() || quan.empty())
 			return { };
 
-		temp_ingredients = DataProcessing::split(ingr, ";");
-		temp_quantity = DataProcessing::split(quan, ";");
+		temp_ingredients = dp::split(ingr, ";");
+		temp_quantity = dp::split(quan, ";");
 
 		if (temp_ingredients.size() != temp_quantity.size())
 			return { };
@@ -616,8 +616,8 @@ map<string, int> ConnectionHandler::GetNeededIngredients(int id, const char* pro
 
 		if (k != -1)
 		{
-			result_ingredients = DataProcessing::split(ingredients[k], ",");
-			result_quantities = DataProcessing::split(quantities[k], ",");
+			result_ingredients = dp::split(ingredients[k], ",");
+			result_quantities = dp::split(quantities[k], ",");
 
 			for (int i = 0; i < result_ingredients.size(); i++)
 				res.insert(make_pair(result_ingredients[i], stoi(result_quantities[i])));
@@ -728,7 +728,7 @@ vector<string> ConnectionHandler::GetIngredients(int id)
 		if (res.empty())
 			return { };
 
-		ingredients = DataProcessing::split(res, ";");
+		ingredients = dp::split(res, ";");
 
 		return ingredients;
 	}
@@ -750,7 +750,7 @@ vector<string> ConnectionHandler::GetQuantities(int id) // Get ingredients quant
 		if (res.empty())
 			return { };
 
-		data = DataProcessing::split(res, ";");
+		data = dp::split(res, ";");
 
 		return data;
 	}
@@ -779,8 +779,8 @@ vector<map<string, int>> ConnectionHandler::GetIngredientsVector(int id)
 
 		for (int i = 0; i < names.size(); i++)
 		{
-			names_temp = DataProcessing::split(names[i], ",");
-			quantities_temp = DataProcessing::split(quantities[i], ",");
+			names_temp = dp::split(names[i], ",");
+			quantities_temp = dp::split(quantities[i], ",");
 
 			if (names_temp.size() != quantities_temp.size())
 				return { };
@@ -814,7 +814,7 @@ vector<int> ConnectionHandler::GetQuantity(int id) // Get items quantities
 		if (res.empty())
 			return { };
 
-		data = DataProcessing::split(res, ";");
+		data = dp::split(res, ";");
 
 		for (int i = 0; i < data.size(); i++)
 			data_d.push_back(stoi(data[i]));
@@ -840,7 +840,7 @@ vector<double> ConnectionHandler::GetPrices(int id)
 		if (res.empty())
 			return { };
 
-		data = DataProcessing::split(res, ";");
+		data = dp::split(res, ";");
 
 		for (int i = 0; i < data.size(); i++)
 			data_d.push_back(stod(data[i]));
@@ -1096,7 +1096,7 @@ bool ConnectionHandler::TakeItem(int id, const char* name, int quantity)
 				if (quantities[i] >= quantity)
 				{
 					quantities[i] -= quantity;
-					q = DataProcessing::back_split(quantities, ";");
+					q = dp::back_split(quantities, ";");
 					UpdateString(id, "quantity", q.c_str());
 					return true;
 				}
@@ -1123,8 +1123,8 @@ bool ConnectionHandler::TakeIngredient(int id, const char* name, int quantity)
 
 	if (IsIdExisting(id)) // Check if id is existing
 	{
-		ingredients = DataProcessing::split(GetMachineIngredients(id), ";");
-		quantities = DataProcessing::split(GetMachineIngredientsQuantities(id), ";");
+		ingredients = dp::split(GetMachineIngredients(id), ";");
+		quantities = dp::split(GetMachineIngredientsQuantities(id), ";");
 
 		if (ingredients.empty())
 			return false;
@@ -1138,7 +1138,7 @@ bool ConnectionHandler::TakeIngredient(int id, const char* name, int quantity)
 			}
 		}
 
-		res = DataProcessing::back_split(quantities, ";");
+		res = dp::back_split(quantities, ";");
 
 		UpdateString(id, "quantity", res.c_str(), "ingredients");
 
@@ -1204,11 +1204,11 @@ bool ConnectionHandler::DeleteItem(int id, const char* name)
 		data_ingredients_quantity.erase(data_ingredients_quantity.begin() + pos);
 		data_product_prices.erase(data_product_prices.begin() + pos);
 
-		products = DataProcessing::back_split(data_products, ";");
-		quantity = DataProcessing::back_split(data_quantity, ";");
-		ingredients = DataProcessing::back_split(data_ingredients, ";");
-		ingredients_quantity = DataProcessing::back_split(data_ingredients_quantity, ";");
-		product_prices = DataProcessing::back_split(data_product_prices, ";");
+		products = dp::back_split(data_products, ";");
+		quantity = dp::back_split(data_quantity, ";");
+		ingredients = dp::back_split(data_ingredients, ";");
+		ingredients_quantity = dp::back_split(data_ingredients_quantity, ";");
+		product_prices = dp::back_split(data_product_prices, ";");
 
 		if (!UpdateRow(id, products.c_str(), quantity.c_str(), ingredients.c_str(), ingredients_quantity.c_str(), product_prices.c_str()))
 			return false;
@@ -1231,8 +1231,8 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 
 	if (IsIdExisting(id))
 	{
-		data_ingredients = DataProcessing::split(GetMachineIngredients(id), ";");
-		data_quantities = DataProcessing::split(GetMachineIngredientsQuantities(id), ";");
+		data_ingredients = dp::split(GetMachineIngredients(id), ";");
+		data_quantities = dp::split(GetMachineIngredientsQuantities(id), ";");
 
 		if (data_ingredients.empty() || data_quantities.empty())
 		{
@@ -1258,8 +1258,8 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 
 		data_quantities.erase(data_quantities.begin() + pos);
 
-		ingredients = DataProcessing::back_split(data_ingredients, ";");
-		quantities = DataProcessing::back_split(data_quantities, ";");
+		ingredients = dp::back_split(data_ingredients, ";");
+		quantities = dp::back_split(data_quantities, ";");
 
 		if (!UpdateString(id, "ingredients", ingredients.c_str(), "ingredients"))
 			return false;

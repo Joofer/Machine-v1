@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class DataProcessing
+class dp
 {
 public:
 	//
