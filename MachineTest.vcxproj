@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Connection.h" />
+    <ClInclude Include="ConnectionOptions.h" />
     <ClInclude Include="DataProcessing.h" />
     <ClInclude Include="libs\BeverageMachine.h" />
     <ClInclude Include="libs\CoffeeMachine.h" />

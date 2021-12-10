@@ -45,6 +45,9 @@
     <ClInclude Include="Connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConnectionOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BeverageMachine.cpp">
