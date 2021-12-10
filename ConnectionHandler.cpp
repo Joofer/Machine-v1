@@ -1,35 +1,17 @@
 #include "libs/ConnectionHandler.h"
 
-ConnectionHandler::ConnectionHandler()
-{
-	driver = NULL;
-	con = NULL;
-	stmt = NULL;
-	pstmt = NULL;
-	result = NULL;
-}
+// Checking functions
 
-ConnectionHandler::ConnectionHandler(const char* server, const char* username, const char* password, const char* database)
+bool ConnectionHandler::IsColumnExisting(const char* column, const char* table)
 {
-	driver = NULL;
-	con = NULL;
-	stmt = NULL;
-	pstmt = NULL;
-	result = NULL;
+	char statement[255];
 
-	ConnectToDatabase(server, username, password, database); // We first null all the private variables and then try to connect
-}
-
-bool ConnectionHandler::ConstructDataTable(bool checkPurchases)
-{
-	char statement_machine[] = "CREATE TABLE IF NOT EXISTS `data`( `id` INT NOT NULL AUTO_INCREMENT,  `name` varchar(255) NOT NULL, `type` VARCHAR(20) NOT NULL, `products` TEXT NOT NULL, `quantity` TEXT NOT NULL, `ingredients` TEXT NOT NULL, `ingredients_quantity` TEXT NOT NULL, `product_prices` TEXT NOT NULL, `is_on` TINYINT(1) DEFAULT NULL, PRIMARY KEY(`id`)) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci";
-	char statement_ingredients[] = "CREATE TABLE IF NOT EXISTS `ingredients`( `id` INT NOT NULL AUTO_INCREMENT, `ingredients` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL, `quantity` TEXT NOT NULL, PRIMARY KEY(`id`)) ENGINE = InnoDB AUTO_INCREMENT = 6 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci";
-	char statement_purchases[] = "CREATE TABLE `purchases` ( `id` bigint unsigned NOT NULL AUTO_INCREMENT, `machine_id` int NOT NULL, `items` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL, `prices` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL, `total` decimal(8, 2) NOT NULL, `date` date NOT NULL, `time` time NOT NULL, PRIMARY KEY(`id`)) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci";
+	stmt = con->createStatement();
+	sprintf_s(statement, "SELECT %s FROM %s", column, table);
 
 	try
 	{
-		stmt = con->createStatement();
-		stmt->execute(statement_machine);
+		result = stmt->executeQuery(statement);
 	}
 	catch (sql::SQLException e)
 	{
@@ -37,467 +19,107 @@ bool ConnectionHandler::ConstructDataTable(bool checkPurchases)
 		return false;
 	}
 
-	try
+	if (!result->next())
 	{
-		stmt = con->createStatement();
-		stmt->execute(statement_ingredients);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
+		// cout << "Error while checking column." << endl;
 		return false;
 	}
+	else
+	{
+		return true;
+	}
+}
+
+bool ConnectionHandler::IsDataTableExisting(const char* table, vector<const char*> columns)
+{
+	for (int i = 0; i < columns.size(); i++)
+	{
+		if (!IsColumnExisting(columns[i], table))
+		{
+			cout << "Error while checking datatable. Column " << columns[i] << " does not exist." << endl;
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool ConnectionHandler::IsIdExisting(int id)
+{
+	if (CheckQuery(id)) return true;
+
+	return false;
+}
+
+bool ConnectionHandler::CheckDBStructure(bool checkPurchases)
+{
+	if (!IsDataTableExisting("data",
+		{
+			"id",
+			"name",
+			"type",
+			"products",
+			"quantity",
+			"ingredients",
+			"ingredients_quantity",
+			"product_prices",
+			"is_on"
+		})
+		) return false;
+
+	if (!IsDataTableExisting("ingredients",
+		{
+			"id",
+			"ingredients",
+			"quantity"
+		})
+		) return false;
 
 	if (checkPurchases)
-	{
-		try
-		{
-			stmt = con->createStatement();
-			stmt->execute(statement_purchases);
-		}
-		catch (sql::SQLException e)
-		{
-			// cout << "Error: " << e.what() << endl;
-			return false;
-		}
-	}
+		if (!IsDataTableExisting("purchases",
+			{
+				"id",
+				"machine_id",
+				"items",
+				"prices",
+				"total",
+				"date",
+				"time"
+			})
+			) return false;
 
 	return true;
 }
 
-// Private functions
-
-string ConnectionHandler::GetString(int id, const char* name)
+bool ConnectionHandler::CheckRowStructure(int id)
 {
-	char statement[255];
-	string res;
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "SELECT %s FROM data WHERE id = %d", name, id);
-
-	try
-	{
-		result = stmt->executeQuery(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		exit(2);
-	}
-
-	if (!result->next())
-	{
-		cout << "Error while getting data from products." << endl;
-		exit(2);
-	}
-
-	res = result->getString(1).c_str();
-
-	delete result;
-
-	return res;
-}
-
-int ConnectionHandler::GetInt(int id, const char* name)
-{
-	char statement[255];
-	int res;
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "SELECT %s FROM data WHERE id = %d", name, id);
-
-	try
-	{
-		result = stmt->executeQuery(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		exit(2);
-	}
-
-	if (!result->next())
-	{
-		cout << "Error while getting data from products." << endl;
-		exit(2);
-	}
-
-	res = result->getInt(1);
-
-	delete result;
-
-	return res;
-}
-
-bool ConnectionHandler::UpdateString(uint64_t id, const char* name, const char* s, const char* table)
-{
-	char statement[16384];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "UPDATE %s SET %s = \"%s\" WHERE id = %llu", table, name, s, id);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
+	if (!IsIdExisting(id))
 		return false;
-	}
+
+	// Machine row
+
+	vector<string> data_products = GetMachineItems(id);
+	vector<int> data_quantity = GetItemQuantities(id);
+	vector<string> data_ingredients = GetMachineIngredients(id);
+	vector<string> data_ingredients_quantity = GetMachineIngredientQuantities(id);
+	vector<double> data_product_prices = GetItemPrices(id);
+
+	if (data_products.size() != data_quantity.size() || data_quantity.size() != data_ingredients.size()
+		|| data_ingredients.size() != data_ingredients_quantity.size() || data_ingredients_quantity.size() != data_product_prices.size())
+		return false;
+
+	// Ingredients row
+
+	map<string, int> data_all_ingredients = GetAllIngredients(id);
+
+	//
 
 	return true;
 }
 
-bool ConnectionHandler::UpdateInt(uint64_t id, const char* name, int v, const char* table)
-{
-	char statement[255];
+// Processing functions
 
-	stmt = con->createStatement();
-	sprintf_s(statement, "UPDATE %s SET %s = %i WHERE id = %llu", table, name, v, id);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::UpdateDouble(uint64_t id, const char* name, double v, const char* table)
-{
-	char statement[255];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "UPDATE %s SET %s = %g WHERE id = %llu", table, name, v, id);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::UpdateUInt64(uint64_t id, const char* name, uint64_t v, const char* table)
-{
-	char statement[255];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "UPDATE %s SET %s = %llu WHERE id = %llu", table, name, v, id);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::UpdateRow(int id, const char* products, const char* quantity, const char* product_prices)
-{
-	if (!CheckRowStructure(id))
-		return false;
-
-	if (!CheckDBStructure())
-		return false;
-
-	if (UpdateString(id, "products", products) && UpdateString(id, "quantity", quantity) && UpdateString(id, "product_prices", product_prices))
-		return true;
-
-	cout << "Error while updating row. Additional manual data check may be needed. Full program reload is recommended." << endl;
-	return false;
-}
-
-bool ConnectionHandler::UpdateRow(int id, const char* products, const char* quantity, const char* ingredients, const char* ingredients_quantity, const char* product_prices)
-{
-	if (!CheckDBStructure())
-		return false;
-
-	if (UpdateString(id, "products", products) && UpdateString(id, "quantity", quantity) && UpdateString(id, "ingredients", ingredients)
-		&& UpdateString(id, "ingredients_quantity", ingredients_quantity) && UpdateString(id, "product_prices", product_prices))
-		return true;
-
-	cout << "Error while updating row. Additional manual data check may be needed. Full program reload is recommended." << endl;
-	return false;
-}
-
-bool ConnectionHandler::Insert(const char* name, const char* type, const char* products, const char* quantity, const char* ingredients, const char* ingredients_quantity, const char* product_prices, const char* ingredient_names, const char* ingredients_quantities, int& out_id)
-{
-	// Getting new id for the machine
-
-	GetMaxId(out_id); // Get max query id
-	out_id += 1; // Add 1 for the new machine's id
-
-	// Create machine row
-
-	char statement[1024];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "INSERT INTO data (`id`, `name`, `type`, `products`, `quantity`, `ingredients`, `ingredients_quantity`, `product_prices`, `is_on`) VALUES ('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 1)", out_id, name, type, products, quantity, ingredients, ingredients_quantity, product_prices);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	// Create ingredients row
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "INSERT INTO ingredients (`id`, `ingredients`, `quantity`) VALUES ('%d', '', '')", out_id);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::Insert(int machine_id, const char* items, const char* prices, double total, const char* date, const char* time)
-{
-	// Create machine row
-
-	char statement[1024];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "INSERT INTO purchases (`machine_id`, `items`, `prices`, `total`, `date`, `time`) VALUES ('%i', '%s', '%s', '%g', '%s', '%s')", machine_id, items, prices, total, date, time);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::Delete(int id, const char* table)
-{
-	char statement[16384];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "DELETE FROM %s WHERE id = %d", table, id);
-
-	try
-	{
-		stmt->execute(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::CheckQuery(int id)
-{
-	char statement[255];
-	unsigned int count = 0;
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "SELECT * FROM data WHERE id = %d", id);
-
-	try
-	{
-		result = stmt->executeQuery(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	if (!result->next())
-	{
-		cout << "Error while checking database query existance." << endl;
-		return false;
-	}
-	else
-	{
-		count++;
-	}
-
-	while (result->next())
-		count++;
-
-	delete result;
-
-	if (count > 0)
-		return true;
-
-	return false;
-}
-
-bool ConnectionHandler::GetMaxId(int& out_id, const char* table)
-{
-	char statement[255];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "SELECT MAX(id) FROM %s", table);
-
-	try
-	{
-		result = stmt->executeQuery(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	if (!result->next())
-	{
-		cout << "Error while getting data from products." << endl;
-		return false;
-	}
-
-	out_id = result->getInt(1);
-
-	delete result;
-
-	return true;
-}
-
-bool ConnectionHandler::GetMaxId(uint64_t& out_id, const char* table)
-{
-	char statement[255];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "SELECT MAX(id) FROM %s", table);
-
-	try
-	{
-		result = stmt->executeQuery(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	if (!result->next())
-	{
-		cout << "Error while getting data from products." << endl;
-		return false;
-	}
-
-	out_id = result->getUInt(1);
-
-	delete result;
-
-	return true;
-}
-
-//
-
-bool ConnectionHandler::ConnectToDatabase(const char* server, const char* username, const char* password, const char* database)
-{
-	try
-	{
-		driver = get_driver_instance();
-		con = driver->connect(server, username, password);
-		con->setSchema(database);
-	}
-	catch (sql::SQLException e)
-	{
-		cout << "Could not connect to server. Error: " << e.what() << endl;
-		exit(1);
-	}
-
-	if (!CheckDBStructure())
-	{
-		cout << "Error while checking database structure. Creating datatable..." << endl;
-		
-		if (!ConstructDataTable(true)) // In this case we use purchase logging so we need to set checkPurchases to true
-		{
-			cout << "Error while creating datatable. Additional manual data check and correction may be needed. Full program reload is recommended." << endl;
-
-			return false;
-		}
-		else
-		{
-			cout << "Datatable created." << endl;
-
-			return true;
-		}
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::Check()
-{
-	if (con->isValid())
-	{
-		if (Reconnect())
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool ConnectionHandler::Reconnect()
-{
-	uint32_t tick = 1000000;
-
-	while (!con->reconnect())
-		tick--;
-
-	if (tick > 0)
-		return true;
-	else
-		return false;
-}
-
-void ConnectionHandler::Disconnect()
-{
-	delete pstmt;
-	delete con;
-}
-
-//
-
-string ConnectionHandler::GetName(int id)
+string ConnectionHandler::GetMachineName(int id)
 {
 	string name;
 
@@ -513,7 +135,7 @@ string ConnectionHandler::GetName(int id)
 	}
 }
 
-vector<string> ConnectionHandler::GetProducts(int id)
+vector<string> ConnectionHandler::GetMachineItems(int id)
 {
 	vector<string> data;
 	string res;
@@ -545,29 +167,8 @@ map<string, int> ConnectionHandler::GetAllIngredients(int id)
 
 	if (IsIdExisting(id))
 	{
-		pstmt = con->prepareStatement("SELECT ingredients, quantity FROM ingredients WHERE id = ?");
-		pstmt->setInt(1, id);
-
-		try
-		{
-			result = pstmt->executeQuery();
-		}
-		catch (sql::SQLException e)
-		{
-			// cout << "Error: " << e.what() << endl;
-			return { };
-		}
-
-		if (!result->next())
-		{
-			cout << "Error while getting data from ingredients, quantity." << endl;
-			exit(2);
-		}
-
-		ingr = result->getString(1).c_str();
-		quan = result->getString(2).c_str();
-
-		delete result;
+		ingr = GetIngredients(id);
+		quan = GetIngredientQuantities(id);
 
 		if (ingr.empty() || quan.empty())
 			return { };
@@ -601,9 +202,9 @@ map<string, int> ConnectionHandler::GetNeededIngredients(int id, const char* pro
 
 	if (IsIdExisting(id)) // Check if id is existing
 	{
-		products = GetProducts(id);
-		ingredients = GetIngredients(id);
-		quantities = GetQuantities(id);
+		products = GetMachineItems(id);
+		ingredients = GetMachineIngredients(id);
+		quantities = GetMachineIngredientQuantities(id);
 
 		for (int i = 0; i < products.size(); i++)
 		{
@@ -635,34 +236,13 @@ map<string, int> ConnectionHandler::GetNeededIngredients(int id, const char* pro
 	}
 }
 
-string ConnectionHandler::GetMachineIngredients(int id)
+string ConnectionHandler::GetIngredients(int id)
 {
 	string ingredients;
 
 	if (IsIdExisting(id))
 	{
-		pstmt = con->prepareStatement("SELECT ingredients FROM ingredients WHERE id = ?");
-		pstmt->setInt(1, id);
-
-		try
-		{
-			result = pstmt->executeQuery();
-		}
-		catch (sql::SQLException e)
-		{
-			// cout << "Error: " << e.what() << endl;
-			return { };
-		}
-
-		if (!result->next())
-		{
-			cout << "Error while getting data from ingredients table." << endl;
-			exit(2);
-		}
-
-		ingredients = result->getString(1).c_str();
-
-		delete result;
+		ingredients = GetString(id, "ingredients", "ingredients");
 
 		if (ingredients.empty())
 			return "";
@@ -675,34 +255,13 @@ string ConnectionHandler::GetMachineIngredients(int id)
 	}
 }
 
-string ConnectionHandler::GetMachineIngredientsQuantities(int id)
+string ConnectionHandler::GetIngredientQuantities(int id)
 {
 	string quantities;
 
 	if (IsIdExisting(id))
 	{
-		pstmt = con->prepareStatement("SELECT quantity FROM ingredients WHERE id = ?");
-		pstmt->setInt(1, id);
-
-		try
-		{
-			result = pstmt->executeQuery();
-		}
-		catch (sql::SQLException e)
-		{
-			// cout << "Error: " << e.what() << endl;
-			return { };
-		}
-
-		if (!result->next())
-		{
-			cout << "Error while getting data from ingredients table." << endl;
-			exit(2);
-		}
-
-		quantities = result->getString(1).c_str();
-
-		delete result;
+		quantities = GetString(id, "quantity", "ingredients");
 
 		if (quantities.empty())
 			return "";
@@ -715,9 +274,8 @@ string ConnectionHandler::GetMachineIngredientsQuantities(int id)
 	}
 }
 
-vector<string> ConnectionHandler::GetIngredients(int id)
+vector<string> ConnectionHandler::GetMachineIngredients(int id)
 {
-	vector<string> data;
 	vector<string> ingredients;
 	string res;
 
@@ -738,7 +296,7 @@ vector<string> ConnectionHandler::GetIngredients(int id)
 	}
 }
 
-vector<string> ConnectionHandler::GetQuantities(int id) // Get ingredients quantities
+vector<string> ConnectionHandler::GetMachineIngredientQuantities(int id) // Get ingredients quantities
 {
 	vector<string> data;
 	string res;
@@ -760,26 +318,26 @@ vector<string> ConnectionHandler::GetQuantities(int id) // Get ingredients quant
 	}
 }
 
-vector<map<string, int>> ConnectionHandler::GetIngredientsVector(int id)
+vector<map<string, int>> ConnectionHandler::GetMachineIngredientsVector(int id)
 {
 	vector<map<string, int>> data;
 	map<string, int> temp;
-	vector<string> names;
+	vector<string> ingredients;
 	vector<string> quantities;
 	vector<string> names_temp;
 	vector<string> quantities_temp;
 
 	if (IsIdExisting(id))
 	{
-		names = GetIngredients(id);
-		quantities = GetQuantities(id);
+		ingredients = GetMachineIngredients(id);
+		quantities = GetMachineIngredientQuantities(id);
 
-		if (names.size() != quantities.size())
+		if (ingredients.size() != quantities.size())
 			return { };
 
-		for (int i = 0; i < names.size(); i++)
+		for (int i = 0; i < ingredients.size(); i++)
 		{
-			names_temp = dp::split(names[i], ",");
+			names_temp = dp::split(ingredients[i], ",");
 			quantities_temp = dp::split(quantities[i], ",");
 
 			if (names_temp.size() != quantities_temp.size())
@@ -801,7 +359,7 @@ vector<map<string, int>> ConnectionHandler::GetIngredientsVector(int id)
 	}
 }
 
-vector<int> ConnectionHandler::GetQuantity(int id) // Get items quantities
+vector<int> ConnectionHandler::GetItemQuantities(int id)
 {
 	vector<string> data;
 	vector<int> data_d;
@@ -827,7 +385,7 @@ vector<int> ConnectionHandler::GetQuantity(int id) // Get items quantities
 	}
 }
 
-vector<double> ConnectionHandler::GetPrices(int id)
+vector<double> ConnectionHandler::GetItemPrices(int id)
 {
 	vector<string> data;
 	vector<double> data_d;
@@ -853,15 +411,15 @@ vector<double> ConnectionHandler::GetPrices(int id)
 	}
 }
 
-double ConnectionHandler::GetPrice(int id, string product)
+double ConnectionHandler::GetItemPrice(int id, string product)
 {
 	vector<string> products;
 	vector<double> prices;
 
 	if (IsIdExisting(id))
 	{
-		products = GetProducts(id);
-		prices = GetPrices(id);
+		products = GetMachineItems(id);
+		prices = GetItemPrices(id);
 
 		for (int i = 0; i < products.size(); i++)
 			if (products[i] == product && prices[i] != NULL)
@@ -1041,8 +599,8 @@ bool ConnectionHandler::AddIngredient(int id, string name, string quantity)
 
 	if (IsIdExisting(id))
 	{
-		data_ingredients = GetMachineIngredients(id);
-		data_quantities = GetMachineIngredientsQuantities(id);
+		data_ingredients = GetIngredients(id);
+		data_quantities = GetIngredientQuantities(id);
 
 		// IT CAN BE EMPTY
 		// if (data_ingredients.empty() || data_quantities.empty())
@@ -1086,8 +644,8 @@ bool ConnectionHandler::TakeItem(int id, const char* name, int quantity)
 
 	if (IsIdExisting(id))
 	{
-		products = GetProducts(id);
-		quantities = GetQuantity(id);
+		products = GetMachineItems(id);
+		quantities = GetItemQuantities(id);
 
 		for (int i = 0; i < products.size(); i++)
 		{
@@ -1123,8 +681,8 @@ bool ConnectionHandler::TakeIngredient(int id, const char* name, int quantity)
 
 	if (IsIdExisting(id)) // Check if id is existing
 	{
-		ingredients = dp::split(GetMachineIngredients(id), ";");
-		quantities = dp::split(GetMachineIngredientsQuantities(id), ";");
+		ingredients = dp::split(GetIngredients(id), ";");
+		quantities = dp::split(GetIngredientQuantities(id), ";");
 
 		if (ingredients.empty())
 			return false;
@@ -1177,11 +735,11 @@ bool ConnectionHandler::DeleteItem(int id, const char* name)
 			return false;
 		}
 
-		data_products = GetProducts(id);
-		data_quantity = GetQuantity(id);
-		data_ingredients = GetIngredients(id);
-		data_ingredients_quantity = GetQuantities(id);
-		data_product_prices = GetPrices(id);
+		data_products = GetMachineItems(id);
+		data_quantity = GetItemQuantities(id);
+		data_ingredients = GetMachineIngredients(id);
+		data_ingredients_quantity = GetMachineIngredientQuantities(id);
+		data_product_prices = GetItemPrices(id);
 
 		for (vector<string>::iterator i = data_products.begin(); i != data_products.end(); i++)
 		{
@@ -1231,8 +789,8 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 
 	if (IsIdExisting(id))
 	{
-		data_ingredients = dp::split(GetMachineIngredients(id), ";");
-		data_quantities = dp::split(GetMachineIngredientsQuantities(id), ";");
+		data_ingredients = dp::split(GetIngredients(id), ";");
+		data_quantities = dp::split(GetIngredientQuantities(id), ";");
 
 		if (data_ingredients.empty() || data_quantities.empty())
 		{
@@ -1279,123 +837,6 @@ bool ConnectionHandler::LogPurchase(int id, const char* items, const char* price
 {
 	if (!Insert(id, items, prices, total, date, time))
 		return false;
-
-	return true;
-}
-
-//
-
-bool ConnectionHandler::IsColumnExisting(const char* column, const char* table)
-{
-	char statement[255];
-
-	stmt = con->createStatement();
-	sprintf_s(statement, "SELECT %s FROM %s", column, table);
-	
-	try
-	{
-		result = stmt->executeQuery(statement);
-	}
-	catch (sql::SQLException e)
-	{
-		// cout << "Error: " << e.what() << endl;
-		return false;
-	}
-
-	if (!result->next())
-	{
-		// cout << "Error while checking column." << endl;
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
-
-bool ConnectionHandler::IsDataTableExisting(const char* table, vector<const char*> columns)
-{
-	for (int i = 0; i < columns.size(); i++)
-	{
-		if (!IsColumnExisting(columns[i], table))
-		{
-			cout << "Error while checking datatable. Column " << columns[i] << " does not exist." << endl;
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool ConnectionHandler::IsIdExisting(int id)
-{
-	if (CheckQuery(id)) return true;
-
-	return false;
-}
-
-bool ConnectionHandler::CheckDBStructure(bool checkPurchases)
-{
-	if (!IsDataTableExisting("data",
-		{
-			"id",
-			"name",
-			"type",
-			"products",
-			"quantity",
-			"ingredients",
-			"ingredients_quantity",
-			"product_prices",
-			"is_on"
-		})
-		) return false;
-
-	if (!IsDataTableExisting("ingredients",
-		{
-			"id",
-			"ingredients",
-			"quantity"
-		})
-		) return false;
-
-	if (checkPurchases)
-		if (!IsDataTableExisting("purchases",
-			{
-				"id",
-				"machine_id",
-				"items",
-				"prices",
-				"total",
-				"date",
-				"time"
-			})
-			) return false;
-
-	return true;
-}
-
-bool ConnectionHandler::CheckRowStructure(int id)
-{
-	if (!IsIdExisting(id))
-		return false;
-
-	// Machine row
-	
-	vector<string> data_products = GetProducts(id);
-	vector<int> data_quantity = GetQuantity(id);
-	vector<string> data_ingredients = GetIngredients(id);
-	vector<string> data_ingredients_quantity = GetQuantities(id);
-	vector<double> data_product_prices = GetPrices(id);
-
-	if (data_products.size() != data_quantity.size() || data_quantity.size() != data_ingredients.size()
-		|| data_ingredients.size() != data_ingredients_quantity.size() || data_ingredients_quantity.size() != data_product_prices.size())
-		return false;
-
-	// Ingredients row
-
-	map<string, int> data_all_ingredients = GetAllIngredients(id);
-
-	//
 
 	return true;
 }

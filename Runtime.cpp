@@ -119,7 +119,7 @@ bool RuntimeListener::Create(ConnectionHandler* connection)
 		type = "wending_machine";
 		break;
 	default:
-		return -1;
+		return false;
 	}
 
 	if (connection->CreateMachine(name.c_str(), type.c_str(), id))
@@ -629,7 +629,7 @@ bool RuntimeListener::RefillItem(int id, Machine* machine, ConnectionHandler* ha
 	int quantity;
 	int item_index;
 
-	products = handler->GetProducts(id);
+	products = handler->GetMachineItems(id);
 
 	PrintProducts(machine);
 

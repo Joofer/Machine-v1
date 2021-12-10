@@ -215,10 +215,10 @@ int main()
 
 bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, Machine* machine)
 {
-	vector<string> products = connection->GetProducts(machine_id);
-	vector<map<string, int>> ingredients = connection->GetIngredientsVector(machine_id);
-	vector<int> quantity = connection->GetQuantity(machine_id);
-	vector<double> product_prices = connection->GetPrices(machine_id);
+	vector<string> products = connection->GetMachineItems(machine_id);
+	vector<map<string, int>> ingredients = connection->GetMachineIngredientsVector(machine_id);
+	vector<int> quantity = connection->GetItemQuantities(machine_id);
+	vector<double> product_prices = connection->GetItemPrices(machine_id);
 
 	MachineItem* temp_item;
 	vector<MachineItem> items;
@@ -234,7 +234,7 @@ bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, M
 	// wallet->SetMoney(100); // Set up the wallet
 
 	machine->SetIngredients(connection->GetAllIngredients(machine_id), true); // Set up ingredients
-	machine->SetName((connection->GetName(machine_id)).c_str()); // Set up machine's name
+	machine->SetName((connection->GetMachineName(machine_id)).c_str()); // Set up machine's name
 
 	if (products.size() != quantity.size() || quantity.size() != product_prices.size())
 	{
