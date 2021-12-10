@@ -15,34 +15,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libs\BeverageMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\CoffeeMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Connection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\ConnectionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\Machine.h">
+    <ClInclude Include="BeverageMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\MachineItem.h">
+    <ClInclude Include="CoffeeMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\Runtime.h">
+    <ClInclude Include="ConnectionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\Wallet.h">
+    <ClInclude Include="Machine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\WendingMachine.h">
+    <ClInclude Include="MachineItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Wallet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WendingMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

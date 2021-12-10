@@ -19,16 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BeverageMachine.h" />
+    <ClInclude Include="CoffeeMachine.h" />
     <ClInclude Include="Connection.h" />
+    <ClInclude Include="ConnectionHandler.h" />
     <ClInclude Include="DataProcessing.h" />
-    <ClInclude Include="libs\BeverageMachine.h" />
-    <ClInclude Include="libs\CoffeeMachine.h" />
-    <ClInclude Include="libs\ConnectionHandler.h" />
-    <ClInclude Include="libs\Machine.h" />
-    <ClInclude Include="libs\MachineItem.h" />
-    <ClInclude Include="libs\Runtime.h" />
-    <ClInclude Include="libs\Wallet.h" />
-    <ClInclude Include="libs\WendingMachine.h" />
+    <ClInclude Include="Machine.h" />
+    <ClInclude Include="MachineItem.h" />
+    <ClInclude Include="Runtime.h" />
+    <ClInclude Include="Wallet.h" />
+    <ClInclude Include="WendingMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BeverageMachine.cpp" />
