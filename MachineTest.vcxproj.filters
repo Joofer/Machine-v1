@@ -13,40 +13,37 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\libs">
-      <UniqueIdentifier>{58e3a90e-83b4-457e-96fe-9368186cbd1d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\BeverageMachine.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\CoffeeMachine.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Connection.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\ConnectionHandler.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataProcessing.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\Machine.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\MachineItem.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\Runtime.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\Wallet.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\WendingMachine.h">
-      <Filter>Header Files\libs</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
