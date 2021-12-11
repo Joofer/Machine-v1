@@ -3,8 +3,10 @@
 // 2. Add an ability to create a new machine in-runtime       // Done
 // 3. Add purchases logging                                   // Done
 // 4. Restructure ConnectionHandler class                     // Done
+// 5. Add an ability to refill multiple items and ingredients // Done
 // 5. Wallets via hash files and database                     //
 // 6. Add error logging switcher using define                 //
+// 7. Remove TODO comments from Main.cpp                      //
 
 #include "libs/CoffeeMachine.h"
 #include "libs/Wallet.h"

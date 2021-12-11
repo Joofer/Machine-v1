@@ -19,6 +19,10 @@ public:
 
 	//
 
+	static string remove_from(string s, char symbol);
+
+	//
+
 	static bool read_int(int& out);
 	static bool read_double(double& out);
 	static bool read_string(string& out);

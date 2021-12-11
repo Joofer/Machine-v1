@@ -625,41 +625,90 @@ bool RuntimeListener::RefillItem(int id, Machine* machine, ConnectionHandler* ha
 {
 	vector<string> products;
 	vector<string>::iterator iter;
+	vector<string> indexes;
+	string item_indexes;
+	int index;
 	string item;
 	int quantity;
-	int item_index;
 
 	products = handler->GetMachineItems(id);
 
 	PrintProducts(machine);
 
-	cout << "Item index: ";
-	if (!dp::read_int(item_index))
+	cout << "Item index or indexes (separated with ','): ";
+	if (!dp::read_string(item_indexes))
 		return false;
 
-	if (item_index <= products.size() && item_index > 0)
-	{
-		iter = products.begin(); // Setting up iterator
-		advance(iter, item_index - 1); // Decreasing iterator position by item_index picked - 1, as earlier it was increased
+	indexes = dp::split(dp::remove_from(item_indexes, ' '), ",");
 
-		cout << "Quantity: ";
-		if (!dp::read_int(quantity)) // There may be some checking
-			return false;
-
-		return handler->TakeItem(id, (machine->GetItemById(item_index - 1)->Get()).c_str(), -quantity);
-	}
-	else
+	for (int i = 0; i < indexes.size(); i++)
 	{
-		return false; // item_index is a too big or a too small value
+		try
+		{
+			index = stoi(indexes[i]);
+		}
+		catch (exception e)
+		{
+			cout << i + 1 << ". Index should be a number. You typed: " << indexes[i] << "." << endl;
+
+			continue;
+		}
+
+		if (index <= products.size() && index > 0)
+		{
+			iter = products.begin(); // Setting up iterator
+			advance(iter, index - 1); // Decreasing iterator position by item_index picked - 1, as earlier it was increased
+
+			item = machine->GetItemById(index - 1)->Get(); // Getting item name from machine by it's id
+
+			cout << i + 1 << ". Add quantity of " << item << ": ";
+			if (!dp::read_int(quantity)) // There may be some checking
+			{
+				cout << "Incorrect input." << endl;
+
+				continue;
+			}
+
+			if (quantity > 0 && machine->GetItemById(index - 1)->GetQuantity() + quantity < MAX_ITEM_QUANTITY)
+			{
+				if (handler->TakeItem(id, item.c_str(), -quantity))
+				{
+					cout << "Refilled item " << item << "." << endl;
+				}
+				else
+				{
+					cout << "Error while refilling item " << item << "." << endl;
+
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Too high or too small quantity of " << item << " to be added. Minimum quantity allowed to be added is 1 and maximum is " << MAX_ITEM_QUANTITY - machine->GetItemById(index - 1)->GetQuantity() - 1 << "." << endl;
+
+				continue;
+			}
+		}
+		else
+		{
+			cout << i + 1 << ". Item with index " << index << " not found." << endl;
+
+			continue; // item index is a too big or a too small value
+		}
 	}
+
+	return true;
 }
 
 bool RuntimeListener::RefillIngredient(int id, Machine* machine, ConnectionHandler* handler)
 {
 	map<string, int> ingredients;
 	map<string, int>::iterator iter;
-	int ingredient_index;
-	int ingredient_quantity;
+	vector<string> indexes;
+	string ingredient_indexes;
+	int index;
+	string ingredient;
+	int quantity;
 
 	if (typeid(*machine) != typeid(CoffeeMachine))
 	{
@@ -672,28 +721,69 @@ bool RuntimeListener::RefillIngredient(int id, Machine* machine, ConnectionHandl
 
 	PrintIngredients(machine);
 
-	cout << "Ingredient index: ";
-	if (!dp::read_int(ingredient_index))
+	cout << "Ingredient index or indexes (separated with ','): ";
+	if (!dp::read_string(ingredient_indexes))
 		return false;
 
-	if (ingredient_index <= ingredients.size() && ingredient_index > 0)
+	indexes = dp::split(dp::remove_from(ingredient_indexes, ' '), ",");
+
+	for (int i = 0; i < indexes.size(); i++)
 	{
-		iter = ingredients.begin(); // Setting up iterator
-		advance(iter, ingredient_index - 1); // Decreasing iterator position by ingredient_index picked - 1, as earlier it was increased
+		try
+		{
+			index = stoi(indexes[i]);
+		}
+		catch (exception e)
+		{
+			cout << i + 1 << ". Index should be a number. You typed: " << indexes[i] << "." << endl;
 
-		cout << "Quantity: ";
-		if (!dp::read_int(ingredient_quantity)) // There may be some checking
-			return false;
+			continue;
+		}
 
-		if (ingredient_quantity > 0 && ingredients[iter->first] + ingredient_quantity < MAX_INGREDIENT_QUANTITY) // Check if ingredient quantity input is correct
-			return handler->TakeIngredient(id, (iter->first).c_str(), -ingredient_quantity);
+		if (index <= ingredients.size() && index > 0)
+		{
+			iter = ingredients.begin(); // Setting up iterator
+			advance(iter, index - 1); // Decreasing iterator position by ingredient_index picked - 1, as earlier it was increased
+
+			ingredient = iter->first; // Getting item name from machine by it's id
+
+			cout << i + 1 << ". Add quantity of " << ingredient << ": ";
+			if (!dp::read_int(quantity)) // There may be some checking
+			{
+				cout << "Incorrect input." << endl;
+
+				continue;
+			}
+
+			if (quantity > 0 && ingredients[iter->first] + quantity < MAX_INGREDIENT_QUANTITY) // Check if ingredient quantity input is correct
+			{
+				if (handler->TakeIngredient(id, (iter->first).c_str(), -quantity))
+				{
+					cout << "Refilled ingredient " << ingredient << "." << endl;
+				}
+				else
+				{
+					cout << "Error while refilling ingredient " << ingredient << "." << endl;
+
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Too high or too small quantity of " << ingredient << " to be added. Minimum quantity allowed to be added is 1 and maximum is " << MAX_INGREDIENT_QUANTITY - iter->second - 1 << "." << endl;
+
+				continue;
+			}
+		}
 		else
-			return false;
+		{
+			cout << i + 1 << ". Ingredient with index " << index << " not found." << endl;
+
+			continue; // ingredient index is a too big or a too small value
+		}
 	}
-	else
-	{
-		return false; // ingredient_index is a too big or a too small value
-	}
+
+	return true;
 }
 
 bool RuntimeListener::RemoveProduct(int id, Machine* machine, ConnectionHandler* handler)

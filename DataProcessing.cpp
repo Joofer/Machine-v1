@@ -6,17 +6,17 @@ vector<string> dp::split(string s, string delimiter)
 {
 	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
 	string token;
-	vector<string> res;
+	vector<string> dest;
 
 	while ((pos_end = s.find(delimiter, pos_start)) != string::npos)
 	{
 		token = s.substr(pos_start, pos_end - pos_start);
 		pos_start = pos_end + delim_len;
-		res.push_back(token);
+		dest.push_back(token);
 	}
 
-	res.push_back(s.substr(pos_start));
-	return res;
+	dest.push_back(s.substr(pos_start));
+	return dest;
 }
 
 string dp::back_split(vector<string> v, string delimiter)
@@ -36,30 +36,39 @@ string dp::back_split(vector<string> v, string delimiter)
 
 string dp::back_split(vector<int> v, string delimiter)
 {
-	string s = "";
+	string dest = "";
 	size_t k = 0;
 
 	while (k < v.size())
 	{
-		s += to_string(v[k]);
-		if (k < v.size() - 1) s += ";";
+		dest += to_string(v[k]);
+		if (k < v.size() - 1) dest += ";";
 		k++;
 	}
 
-	return s;
+	return dest;
 }
 
 string dp::back_split(vector<double> v, string delimiter)
 {
-	string s = "";
+	string dest = "";
 	size_t k = 0;
 
 	while (k < v.size())
 	{
-		s += to_string(v[k]);
-		if (k < v.size() - 1) s += ";";
+		dest += to_string(v[k]);
+		if (k < v.size() - 1) dest += ";";
 		k++;
 	}
+
+	return dest;
+}
+
+//
+
+string dp::remove_from(string s, char symbol)
+{
+	s.erase(remove(s.begin(), s.end(), symbol), s.end());
 
 	return s;
 }
