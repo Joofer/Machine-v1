@@ -21,7 +21,7 @@ int id; // Machine's id
 
 connection->ConnectToDatabase("tcp://127.0.1.1:3306", "user", "password", "database"); // Connecting to database
 Runtime::Create(connection); // Creating new machine using previously established connection
-Runtime::Pick(connection, id); // Picking which machine our Machine, ConnectionHandler and RuntimeListener classes should handle using its database id
+Runtime::Pick(connection, id); // Picking which machine our Machine, ConnectionHandler and Runtime classes should handle using its database id
 wallet->SetMoney(100); // Setting up the wallet used for purchases
 UpdateData(id, connection, wallet, coffee_machine); // Loading up machine with data got from database, data is stored in Machine (Coffee Machine) class
 
