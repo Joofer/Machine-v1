@@ -5,9 +5,10 @@
 // 4. Restructure ConnectionHandler class                     // Done
 // 5. Add an ability to refill multiple items and ingredients // Done
 // 6. Edit Buy function, so it takes error_code reference     // Done
-// 7. Wallets via hash files and database                     //
-// 8. Add error logging switcher using define                 //
-// 9. Remove TODO comments from Main.cpp                      //
+// 7. Static runtime class                                    //
+// 8. Wallets via hash files and database                     //
+// 9. Add error logging switcher using define                 //
+// 10. Remove TODO comments from Main.cpp                     //
 
 #include "libs/CoffeeMachine.h"
 #include "libs/Wallet.h"
