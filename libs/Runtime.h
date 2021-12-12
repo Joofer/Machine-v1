@@ -25,38 +25,38 @@ enum class Error
 const int MAX_ITEM_QUANTITY = 100;
 const int MAX_INGREDIENT_QUANTITY = 100;
 
-class RuntimeListener
+class Runtime
 {
 private:
 public:
-	RuntimeListener();
+	Runtime();
 
 	// Machine picking and creation runtime
 
-	void PrintConnect();
-	void PrintPick();
-	bool Connect(ConnectionHandler* connection);
-	bool Pick(ConnectionHandler* connection, int& out_id);
-	bool Create(ConnectionHandler* connection); // Create a new machine
-	bool Delete(ConnectionHandler* connection); // Delete a machine
+	static void PrintConnect();
+	static void PrintPick();
+	static bool Connect(ConnectionHandler* connection);
+	static bool Pick(ConnectionHandler* connection, int& out_id);
+	static bool Create(ConnectionHandler* connection); // Create a new machine
+	static bool Delete(ConnectionHandler* connection); // Delete a machine
 
 	// In-machine runtime
 
 	static bool Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler, int& error_code);
-	void ThrowError(Error error);
-	void PrintName(Machine* machine);
-	void PrintMoney(Wallet* wallet);
-	void PrintSubtraction(double value);
-	void PrintMain();
-	void PrintCoffee(Machine* machine);
-	void PrintManage(int panel);
-	void PrintProducts(Machine* machine);
-	void PrintIngredients(Machine* machine);
-	bool SetName(int id, Machine* machine, ConnectionHandler* handler);
-	bool AddProduct(int id, Machine* machine, ConnectionHandler* handler); // TODO: Add exceptions
-	bool AddIngredient(int id, Machine* machine, ConnectionHandler* handler);
-	bool RefillItem(int id, Machine* machine, ConnectionHandler* handler);
-	bool RefillIngredient(int id, Machine* machine, ConnectionHandler* handler);
-	bool RemoveProduct(int id, Machine* machine, ConnectionHandler* handler);
-	bool RemoveIngredient(int id, Machine* machine, ConnectionHandler* handler);
+	static void ThrowError(Error error);
+	static void PrintName(Machine* machine);
+	static void PrintMoney(Wallet* wallet);
+	static void PrintSubtraction(double value);
+	static void PrintMain();
+	static void PrintCoffee(Machine* machine);
+	static void PrintManage(int panel);
+	static void PrintProducts(Machine* machine);
+	static void PrintIngredients(Machine* machine);
+	static bool SetName(int id, Machine* machine, ConnectionHandler* handler);
+	static bool AddProduct(int id, Machine* machine, ConnectionHandler* handler); // TODO: Add exceptions
+	static bool AddIngredient(int id, Machine* machine, ConnectionHandler* handler);
+	static bool RefillItem(int id, Machine* machine, ConnectionHandler* handler);
+	static bool RefillIngredient(int id, Machine* machine, ConnectionHandler* handler);
+	static bool RemoveProduct(int id, Machine* machine, ConnectionHandler* handler);
+	static bool RemoveIngredient(int id, Machine* machine, ConnectionHandler* handler);
 };

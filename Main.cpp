@@ -5,7 +5,7 @@
 // 4. Restructure ConnectionHandler class                     // Done
 // 5. Add an ability to refill multiple items and ingredients // Done
 // 6. Edit Buy function, so it takes error_code reference     // Done
-// 7. Static runtime class                                    //
+// 7. Static runtime class                                    // Done
 // 8. Wallets via hash files and database                     //
 // 9. Add error logging switcher using define                 //
 // 10. Remove TODO comments from Main.cpp                     //
@@ -21,7 +21,6 @@ bool UpdateData(int, ConnectionHandler*, Wallet*, Machine*);
 
 int main()
 {
-	RuntimeListener* runtime = new RuntimeListener();
 	Machine* machine = new CoffeeMachine();
 	Wallet* wallet = new Wallet();
 	ConnectionHandler* connection = new ConnectionHandler();
@@ -41,14 +40,14 @@ int main()
 
 	while (!isConnected) // Connecting to database
 	{
-		runtime->PrintConnect();
+		Runtime::PrintConnect();
 
 		cin >> action;
 
 		switch (action[0])
 		{
 		case '1':
-			if (runtime->Connect(connection))
+			if (Runtime::Connect(connection))
 				isConnected = true;
 			break;
 
@@ -68,24 +67,24 @@ int main()
 
 	while (!isPicked)
 	{
-		runtime->PrintPick();
+		Runtime::PrintPick();
 
 		cin >> action;
 
 		switch (action[0])
 		{
 		case '1':
-			if (runtime->Pick(connection, machine_id))
+			if (Runtime::Pick(connection, machine_id))
 				isPicked = true;
 			break;
 
 		case '2':
-			if (!runtime->Create(connection))
-				runtime->ThrowError(Error::ERROR_WHILE_MACHINE_CREATION); // Error while creating a new machine
+			if (!Runtime::Create(connection))
+				Runtime::ThrowError(Error::ERROR_WHILE_MACHINE_CREATION); // Error while creating a new machine
 			break;
 		case '3':
-			if (!runtime->Delete(connection))
-				runtime->ThrowError(Error::NO_CONNECTION); // Error while deleting machine
+			if (!Runtime::Delete(connection))
+				Runtime::ThrowError(Error::NO_CONNECTION); // Error while deleting machine
 			break;
 		case 'x':
 			exit(0);
@@ -108,27 +107,27 @@ int main()
 			exit(10);
 		}
 
-		runtime->PrintMain();
+		Runtime::PrintMain();
 		cin >> action;
 
 		switch (action[0])
 		{
 		case 'C':
-			runtime->PrintCoffee(machine);
+			Runtime::PrintCoffee(machine);
 			if (machine->GetItemsCount() > 0) // Check if we have any items before making the customer choose product
 			{
 				if (dp::read_string(action)) // Get product name
 				{
-					if (!runtime->Buy(machine_id, wallet, machine, action, connection, error))
-						runtime->ThrowError(Error(error));
+					if (!Runtime::Buy(machine_id, wallet, machine, action, connection, error))
+						Runtime::ThrowError(Error(error));
 					else
-						runtime->PrintSubtraction(machine->FindItem(action)->GetPrice());
+						Runtime::PrintSubtraction(machine->FindItem(action)->GetPrice());
 
-					runtime->PrintMoney(wallet);
+					Runtime::PrintMoney(wallet);
 				}
 				else
 				{
-					runtime->ThrowError(Error::NO_CONNECTION);
+					Runtime::ThrowError(Error::NO_CONNECTION);
 				}
 			}
 			break;
@@ -137,37 +136,37 @@ int main()
 			break;
 
 		case '1':
-			runtime->PrintManage(1);
+			Runtime::PrintManage(1);
 			cin >> action;
 
 			switch (action[0])
 			{
 			case 'N':
-				if (!runtime->AddProduct(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while adding a product
+				if (!Runtime::AddProduct(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while adding a product
 				break;
 
 			case 'G':
-				if (!runtime->RefillItem(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while refilling an item
+				if (!Runtime::RefillItem(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while refilling an item
 				break;
 
 			case 'R':
-				if (!runtime->RemoveProduct(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while removing a product
+				if (!Runtime::RemoveProduct(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while removing a product
 				break;
 
 			case 'D':
-				runtime->PrintProducts(machine);
+				Runtime::PrintProducts(machine);
 				break;
 
 			case 'M':
-				runtime->PrintName(machine);
+				Runtime::PrintName(machine);
 				break;
 
 			case 'C':
-				if (!runtime->SetName(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while removing a product
+				if (!Runtime::SetName(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while removing a product
 				break;
 
 			default:
@@ -177,28 +176,28 @@ int main()
 			break;
 
 		case '2':
-			runtime->PrintManage(2);
+			Runtime::PrintManage(2);
 			cin >> action;
 
 			switch (action[0])
 			{
 			case 'N':
-				if (!runtime->AddIngredient(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while adding an ingredient
+				if (!Runtime::AddIngredient(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while adding an ingredient
 				break;
 
 			case 'I':
-				if (!runtime->RefillIngredient(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while refilling an ingredient
+				if (!Runtime::RefillIngredient(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while refilling an ingredient
 				break;
 
 			case 'R':
-				if (!runtime->RemoveIngredient(machine_id, machine, connection))
-					runtime->ThrowError(Error::NO_CONNECTION); // Error while removing an ingredient
+				if (!Runtime::RemoveIngredient(machine_id, machine, connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while removing an ingredient
 				break;
 
 			case 'E':
-				runtime->PrintIngredients(machine);
+				Runtime::PrintIngredients(machine);
 				break;
 
 			default:

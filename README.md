@@ -17,18 +17,17 @@ The following code represents how to create ```CoffeeMachine``` and load it up w
 Machine* coffee_machine = new CoffeeMachine(); // Creating a new machine of type Coffee Machine
 Wallet* wallet = new Wallet(); // Create a wallet for purchases
 ConnectionHandler* connection = new ConnectionHandler(); // Create MySQL connection class
-RuntimeListener* runtime = new RuntimeListener(); // Create runtime class to use some high-level functions, such as Buy function
 int id; // Machine's id
 
 connection->ConnectToDatabase("tcp://127.0.1.1:3306", "user", "password", "database"); // Connecting to database
-runtime->Create(connection); // Creating new machine using previously established connection
-runtime->Pick(connection, id); // Picking which machine our Machine, ConnectionHandler and RuntimeListener classes should handle using its database id
+Runtime::Create(connection); // Creating new machine using previously established connection
+Runtime::Pick(connection, id); // Picking which machine our Machine, ConnectionHandler and RuntimeListener classes should handle using its database id
 wallet->SetMoney(100); // Setting up the wallet used for purchases
 UpdateData(id, connection, wallet, coffee_machine); // Loading up machine with data got from database, data is stored in Machine (Coffee Machine) class
 
 string item = "Cappuccino";
 int error; // Variable for storing errors
-error = runtime->Buy(id, wallet, coffee_machine, item, connection); // Buy an item
+Runtime::Buy(id, wallet, coffee_machine, item, connection, error); // Buy an item, sets error code to the error variable, -1 if succeed
 ```
 # List of functions
 Machine() - Create a new machine

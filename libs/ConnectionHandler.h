@@ -22,7 +22,7 @@ public:
 	string GetMachineName(int id); // Get name of the machine
 	vector<string> GetMachineItems(int id); // Get all items from machine
 	map<string, int> GetAllIngredients(int id); // Get all of the ingredients to check if they are in enough quantity
-	map<string, int> GetNeededIngredients(int id, const char* product); // Get ingredients neede for product
+	map<string, int> GetNeededIngredients(int id, const char* product); // Get ingredients needed for product
 	string GetIngredients(int id); // Get ingredients used by machine
 	string GetIngredientQuantities(int id); // Get ingredients quantities
 	vector<string> GetMachineIngredients(int id); // Get all ingredients used by machine

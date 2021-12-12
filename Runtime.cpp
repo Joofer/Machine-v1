@@ -1,13 +1,13 @@
 #include "libs\Runtime.h"
 
-RuntimeListener::RuntimeListener()
+Runtime::Runtime()
 {
 
 }
 
 //
 
-void RuntimeListener::PrintConnect()
+void Runtime::PrintConnect()
 {
 	cout << "=====================================" << endl
 		<< "\t\tCONNECT TO DATABASE" << endl
@@ -18,7 +18,7 @@ void RuntimeListener::PrintConnect()
 		<< "=====================================" << endl;
 }
 
-void RuntimeListener::PrintPick()
+void Runtime::PrintPick()
 {
 	cout << "=====================================" << endl
 		<< "\t\tENTRY" << endl
@@ -31,7 +31,7 @@ void RuntimeListener::PrintPick()
 		<< "=====================================" << endl;
 }
 
-bool RuntimeListener::Connect(ConnectionHandler* connection)
+bool Runtime::Connect(ConnectionHandler* connection)
 {
 	string server;
 	string user;
@@ -65,7 +65,7 @@ bool RuntimeListener::Connect(ConnectionHandler* connection)
 	}
 }
 
-bool RuntimeListener::Pick(ConnectionHandler* connection, int& out_id)
+bool Runtime::Pick(ConnectionHandler* connection, int& out_id)
 {
 	int id;
 
@@ -85,7 +85,7 @@ bool RuntimeListener::Pick(ConnectionHandler* connection, int& out_id)
 	}
 }
 
-bool RuntimeListener::Create(ConnectionHandler* connection)
+bool Runtime::Create(ConnectionHandler* connection)
 {
 	int id;
 	int temp_type;
@@ -143,7 +143,7 @@ bool RuntimeListener::Create(ConnectionHandler* connection)
 	}
 }
 
-bool RuntimeListener::Delete(ConnectionHandler* connection)
+bool Runtime::Delete(ConnectionHandler* connection)
 {
 	int id;
 
@@ -174,7 +174,7 @@ bool RuntimeListener::Delete(ConnectionHandler* connection)
 
 //
 
-bool RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler, int& error_code)
+bool Runtime::Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler, int& error_code)
 {
 	map<string, int> ingredients;
 	string prices;
@@ -255,7 +255,7 @@ bool RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item,
 	}
 }
 
-void RuntimeListener::ThrowError(Error error)
+void Runtime::ThrowError(Error error)
 {
 	cout << "Error: ";
 	switch (error)
@@ -287,24 +287,24 @@ void RuntimeListener::ThrowError(Error error)
 	}
 }
 
-void RuntimeListener::PrintName(Machine* machine)
+void Runtime::PrintName(Machine* machine)
 {
 	cout << "=====================================" << endl
 		<< "CURRENT NAME: " << machine->GetName() << endl
 		<< "=====================================" << endl;
 }
 
-void RuntimeListener::PrintMoney(Wallet* wallet)
+void Runtime::PrintMoney(Wallet* wallet)
 {
 	cout << "You have " << wallet->GetMoney() << endl;
 }
 
-void RuntimeListener::PrintSubtraction(double value)
+void Runtime::PrintSubtraction(double value)
 {
 	cout << " - " << value << endl;
 }
 
-void RuntimeListener::PrintMain()
+void Runtime::PrintMain()
 {
 	cout << "=====================================" << endl
 		<< "C\tBuy a cup of hot drink" << endl
@@ -317,7 +317,7 @@ void RuntimeListener::PrintMain()
 		<< "=====================================" << endl;
 }
 
-void RuntimeListener::PrintCoffee(Machine* machine)
+void Runtime::PrintCoffee(Machine* machine)
 {
 	MachineItem* current_item = new MachineItem();
 	string machine_name = machine->GetName();
@@ -360,7 +360,7 @@ void RuntimeListener::PrintCoffee(Machine* machine)
 	}
 }
 
-void RuntimeListener::PrintManage(int panel)
+void Runtime::PrintManage(int panel)
 {
 	switch (panel)
 	{
@@ -393,7 +393,7 @@ void RuntimeListener::PrintManage(int panel)
 	}
 }
 
-void RuntimeListener::PrintProducts(Machine* machine)
+void Runtime::PrintProducts(Machine* machine)
 {
 	cout << "=====================================" << endl
 		<< "\tAVAILABLE ITEMS" << endl;
@@ -414,7 +414,7 @@ void RuntimeListener::PrintProducts(Machine* machine)
 	cout << "=====================================" << endl;
 }
 
-void RuntimeListener::PrintIngredients(Machine* machine)
+void Runtime::PrintIngredients(Machine* machine)
 {
 	map<string, int> ingredients;
 	int k = 0;
@@ -447,7 +447,7 @@ void RuntimeListener::PrintIngredients(Machine* machine)
 	cout << "=====================================" << endl;
 }
 
-bool RuntimeListener::SetName(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::SetName(int id, Machine* machine, ConnectionHandler* handler)
 {
 	string name;
 
@@ -460,7 +460,7 @@ bool RuntimeListener::SetName(int id, Machine* machine, ConnectionHandler* handl
 	return handler->SetName(id, name.c_str());
 }
 
-bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 {
 	map<string, int> ingredients;
 	map<string, int>::iterator iter;
@@ -580,7 +580,7 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 	}
 }
 
-bool RuntimeListener::AddIngredient(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::AddIngredient(int id, Machine* machine, ConnectionHandler* handler)
 {
 	map<string, int> ingredients;
 	string ingredient_name;
@@ -631,7 +631,7 @@ bool RuntimeListener::AddIngredient(int id, Machine* machine, ConnectionHandler*
 	}
 }
 
-bool RuntimeListener::RefillItem(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::RefillItem(int id, Machine* machine, ConnectionHandler* handler)
 {
 	vector<string> products;
 	vector<string>::iterator iter;
@@ -710,7 +710,7 @@ bool RuntimeListener::RefillItem(int id, Machine* machine, ConnectionHandler* ha
 	return true;
 }
 
-bool RuntimeListener::RefillIngredient(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::RefillIngredient(int id, Machine* machine, ConnectionHandler* handler)
 {
 	map<string, int> ingredients;
 	map<string, int>::iterator iter;
@@ -796,7 +796,7 @@ bool RuntimeListener::RefillIngredient(int id, Machine* machine, ConnectionHandl
 	return true;
 }
 
-bool RuntimeListener::RemoveProduct(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::RemoveProduct(int id, Machine* machine, ConnectionHandler* handler)
 {
 	int item_index = 0;
 
@@ -810,7 +810,7 @@ bool RuntimeListener::RemoveProduct(int id, Machine* machine, ConnectionHandler*
 	return handler->DeleteItem(id, (machine->GetItemById(item_index - 1)->Get()).c_str()); // Decreasing iterator position by item_index picked - 1, as earlier it was increased
 }
 
-bool RuntimeListener::RemoveIngredient(int id, Machine* machine, ConnectionHandler* handler)
+bool Runtime::RemoveIngredient(int id, Machine* machine, ConnectionHandler* handler)
 {
 	map<string, int> ingredients;
 	map<string, int>::iterator iter;
