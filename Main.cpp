@@ -4,9 +4,10 @@
 // 3. Add purchases logging                                   // Done
 // 4. Restructure ConnectionHandler class                     // Done
 // 5. Add an ability to refill multiple items and ingredients // Done
-// 5. Wallets via hash files and database                     //
-// 6. Add error logging switcher using define                 //
-// 7. Remove TODO comments from Main.cpp                      //
+// 6. Edit Buy function, so it takes error_code reference     // Done
+// 7. Wallets via hash files and database                     //
+// 8. Add error logging switcher using define                 //
+// 9. Remove TODO comments from Main.cpp                      //
 
 #include "libs/CoffeeMachine.h"
 #include "libs/Wallet.h"
@@ -117,9 +118,7 @@ int main()
 			{
 				if (dp::read_string(action)) // Get product name
 				{
-					error = runtime->Buy(machine_id, wallet, machine, action, connection);
-
-					if (error != -1)
+					if (!runtime->Buy(machine_id, wallet, machine, action, connection, error))
 						runtime->ThrowError(Error(error));
 					else
 						runtime->PrintSubtraction(machine->FindItem(action)->GetPrice());

@@ -174,7 +174,7 @@ bool RuntimeListener::Delete(ConnectionHandler* connection)
 
 //
 
-int RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler)
+bool RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler, int& error_code)
 {
 	map<string, int> ingredients;
 	string prices;
@@ -191,15 +191,14 @@ int RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, 
 	strftime(date_str, sizeof(date_str), "%Y-%m-%d", &_time);
 	strftime(time_str, sizeof(time_str), "%X", &_time);
 
-	// cout << "Date: " << date_str << " time: " << time_str << "." << endl;
-
 	//
 
 	if (machine->FindId(item) != -1)
 	{
 		if (wallet->GetMoney() < machine->FindItem(item)->GetPrice())
 		{
-			return 1; // Not enough money
+			error_code = 1; // Not enough money
+			return false;
 		}
 		else
 		{
@@ -231,23 +230,28 @@ int RuntimeListener::Buy(int id, Wallet* wallet, Machine* machine, string item, 
 						cout << "Error while logging purchase." << endl;
 
 					wallet->TakeMoney(machine->FindItem(item)->GetPrice());
-					return -1;
+					error_code = -1;
+					return true;
 				}
 				else
 				{
 					handler->TakeItem(id, item.c_str(), -1);
-					return 2; // Couldn't take an item from machine
+
+					error_code = 2; // Couldn't take an item from machine
+					return false;
 				}
 			}
 			else
 			{
-				return 3; // Couldn't take an item from database
+				error_code = 3; // Couldn't take an item from database
+				return false;
 			}
 		}
 	}
 	else
 	{
-		return 0;
+		error_code = 0; // Item not found
+		return false;
 	}
 }
 
@@ -495,9 +499,12 @@ bool RuntimeListener::AddProduct(int id, Machine* machine, ConnectionHandler* ha
 		return false;
 	}
 	
-	cout << "Product name (without spaces): ";
+	cout << "Product name: ";
 	if (!dp::read_string(product_name))
 		return false;
+
+	product_name = dp::remove_from(product_name, ','); // Deleting delimiter characters from product_name
+	product_name = dp::remove_from(product_name, ';'); // if they were typed
 
 	if (product_type_number == 2)
 	{
@@ -593,9 +600,12 @@ bool RuntimeListener::AddIngredient(int id, Machine* machine, ConnectionHandler*
 	cout << "=====================================" << endl
 		<< "\tADD INGREDIENT:" << endl;
 
-	cout << "Ingredient name (without spaces): ";
+	cout << "Ingredient name: ";
 	if (!dp::read_string(ingredient_name))
 		return false;
+
+	ingredient_name = dp::remove_from(ingredient_name, ','); // Deleting delimiter characters from ingredient_name
+	ingredient_name = dp::remove_from(ingredient_name, ';'); // if they were typed
 
 	cout << "Ingredient quantity: ";
 	if (!dp::read_int(ingredient_quantity))

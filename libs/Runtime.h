@@ -42,7 +42,7 @@ public:
 
 	// In-machine runtime
 
-	static int Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler);
+	static bool Buy(int id, Wallet* wallet, Machine* machine, string item, ConnectionHandler* handler, int& error_code);
 	void ThrowError(Error error);
 	void PrintName(Machine* machine);
 	void PrintMoney(Wallet* wallet);
