@@ -2,6 +2,7 @@
 The following libraries have to be installed and included to Visual Studio before running the project
 + [MySQL Connector C++ 1.1.13](https://dev.mysql.com/downloads/connector/cpp/1.1.html)
 + [boost_1_78_0](https://www.boost.org/users/history/version_1_78_0.html)  
+
 Project was built using C++20.
 # Wending Machine Libraries
 This is a pack of libraries made to create and test wending machine.
