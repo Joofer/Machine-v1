@@ -80,7 +80,11 @@ bool Connection::ConnectToDatabase(const char* server, const char* username, con
 	catch (sql::SQLException e)
 	{
 		cout << "Could not connect to server. Error: " << e.what() << endl;
-		exit(1);
+
+		if (e.getErrorCode() != 1045) // Exit only on crucial errors
+			exit(1); // Error 1 represents connection error
+		else
+			return false;
 	}
 
 	if (!CheckDBStructure())
