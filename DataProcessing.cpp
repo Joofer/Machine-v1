@@ -117,18 +117,18 @@ bool dp::read_string(string& out)
 {
 	string s;
 
-	cin.ignore(INT_MAX, '\n');
-	getline(cin, s);
-
+	// cin.ignore(INT_MAX, '\n');
+	std::getline(cin >> ws, s);
+	
 	if (!cin)
 	{
 		cin.clear();
-
+	
 		return false;
 	}
-
+	
 	out = s;
-
+	
 	if (s != "-1") // For in-creation and in-edititing runtime exit
 		return true;
 	else
