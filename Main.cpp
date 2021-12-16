@@ -34,7 +34,7 @@ int main()
 	bool isConnected = false;
 	bool isPicked = false;
 
-	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "YEAH!121_@YEAH!121_@", "database0")) // Connecting to database automatically
+	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "(password)", "database0")) // Connecting to database automatically
 	{
 		isConnected = true;
 	}
