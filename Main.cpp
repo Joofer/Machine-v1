@@ -6,7 +6,7 @@
 // 5. Add an ability to refill multiple items and ingredients // Done
 // 6. Edit Buy function, so it takes error_code reference     // Done
 // 7. Static runtime class                                    // Done
-// 8. Get all machines                                        //
+// 8. Display all machines                                        // Done
 // 9. Wallets via hash files and database                     //
 // 10. Add error logging switcher using define                //
 // 11. Remove TODO comments from Main.cpp                     //
@@ -34,10 +34,10 @@ int main()
 	bool isConnected = false;
 	bool isPicked = false;
 
-	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "(password)", "database0")) // Connecting to database automatically
-	{
-		isConnected = true;
-	}
+	// if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "YEAH!121_@YEAH!121_@", "database0")) // Connecting to database automatically
+	// {
+	// 	isConnected = true;
+	// }
 
 	while (!isConnected) // Connecting to database
 	{
