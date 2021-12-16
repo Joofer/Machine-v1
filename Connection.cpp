@@ -148,9 +148,50 @@ void Connection::Disconnect()
 
 // Private functions
 
+string Connection::GetColumn(const char* name, const char* table)
+{
+	char statement[MAXSTATEMENTCHARSLOWER];
+	string res = "";
+
+	stmt = con->createStatement();
+	sprintf_s(statement, "SELECT %s FROM %s", name, table);
+
+	try
+	{
+		result = stmt->executeQuery(statement);
+	}
+	catch (sql::SQLException e)
+	{
+		// cout << "Error: " << e.what() << endl;
+		exit(2);
+	}
+
+	if (!result->next())
+	{
+		cout << "Error while getting data from column." << endl;
+		exit(2);
+	}
+	else
+	{
+		res = res + result->getString(1).c_str() + ";";
+	}
+
+	while (result->next())
+	{
+		res = res + result->getString(1).c_str() + ";";
+	}
+
+	if (!res.empty())
+		res.erase(res.size() - 1); // Delete last ';'
+
+	delete result;
+
+	return res;
+}
+
 string Connection::GetString(int id, const char* name, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 	string res;
 
 	stmt = con->createStatement();
@@ -181,7 +222,7 @@ string Connection::GetString(int id, const char* name, const char* table)
 
 int Connection::GetInt(int id, const char* name, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 	int res;
 
 	stmt = con->createStatement();
@@ -232,7 +273,7 @@ bool Connection::UpdateString(uint64_t id, const char* name, const char* s, cons
 
 bool Connection::UpdateInt(uint64_t id, const char* name, int v, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "UPDATE %s SET %s = %i WHERE id = %llu", table, name, v, id);
@@ -252,7 +293,7 @@ bool Connection::UpdateInt(uint64_t id, const char* name, int v, const char* tab
 
 bool Connection::UpdateDouble(uint64_t id, const char* name, double v, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "UPDATE %s SET %s = %g WHERE id = %llu", table, name, v, id);
@@ -272,7 +313,7 @@ bool Connection::UpdateDouble(uint64_t id, const char* name, double v, const cha
 
 bool Connection::UpdateUInt64(uint64_t id, const char* name, uint64_t v, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "UPDATE %s SET %s = %llu WHERE id = %llu", table, name, v, id);
@@ -404,7 +445,7 @@ bool Connection::Delete(int id, const char* table)
 
 bool Connection::CheckQuery(int id)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 	unsigned int count = 0;
 
 	stmt = con->createStatement();
@@ -443,7 +484,7 @@ bool Connection::CheckQuery(int id)
 
 bool Connection::GetMaxId(int& out_id, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "SELECT MAX(id) FROM %s", table);
@@ -473,7 +514,7 @@ bool Connection::GetMaxId(int& out_id, const char* table)
 
 bool Connection::GetMaxId(uint64_t& out_id, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "SELECT MAX(id) FROM %s", table);

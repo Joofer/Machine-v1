@@ -10,6 +10,8 @@
 
 using namespace std;
 
+const uint64_t MAXSTATEMENTCHARSLOWER = 255;
+
 class Connection
 {
 protected:
@@ -43,6 +45,7 @@ public:
 
 	// Query functions
 
+	string GetColumn(const char* name, const char* table = "data");
 	string GetString(int id, const char* name, const char* table = "data");
 	int GetInt(int id, const char* name, const char* table = "data");
 	bool UpdateString(uint64_t id, const char* name, const char* s, const char* table = "data");
