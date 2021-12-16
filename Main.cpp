@@ -6,9 +6,10 @@
 // 5. Add an ability to refill multiple items and ingredients // Done
 // 6. Edit Buy function, so it takes error_code reference     // Done
 // 7. Static runtime class                                    // Done
-// 8. Wallets via hash files and database                     //
-// 9. Add error logging switcher using define                 //
-// 10. Remove TODO comments from Main.cpp                     //
+// 8. Get all machines                                        //
+// 9. Wallets via hash files and database                     //
+// 10. Add error logging switcher using define                //
+// 11. Remove TODO comments from Main.cpp                     //
 
 #include "libs/CoffeeMachine.h"
 #include "libs/Wallet.h"
@@ -33,7 +34,7 @@ int main()
 	bool isConnected = false;
 	bool isPicked = false;
 
-	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "(password)", "database0")) // Connecting to database automatically
+	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "YEAH!121_@YEAH!121_@", "database0")) // Connecting to database automatically
 	{
 		isConnected = true;
 	}
@@ -85,6 +86,9 @@ int main()
 		case '3':
 			if (!Runtime::Delete(connection))
 				Runtime::ThrowError(Error::NO_CONNECTION); // Error while deleting machine
+			break;
+		case '4':
+			Runtime::DisplayAll(connection);
 			break;
 		case 'x':
 			exit(0);

@@ -26,6 +26,7 @@ void Runtime::PrintPick()
 		<< "1\tConnect to an existing machine" << endl
 		<< "2\tCreate a new machine" << endl
 		<< "3\tDelete an existing machine" << endl
+		<< "4\tDisplay all existing machines" << endl
 		<< "" << endl
 		<< "x\tExit" << endl
 		<< "=====================================" << endl;
@@ -170,6 +171,20 @@ bool Runtime::Delete(ConnectionHandler* connection)
 		return false;
 	}
 
+}
+
+void Runtime::DisplayAll(ConnectionHandler* connection)
+{
+	vector<string> names = dp::split(connection->GetMachineNames(), ";");
+
+	cout << "=====================================" << endl
+		<< "\t\tMACHINES" << endl
+		<< "ID\t\tNAME" << endl;
+
+	for (int i = 0; i < names.size(); i++)
+		cout << i + 1 << "\t" << names[i] << endl;
+
+	cout << "=====================================" << endl;
 }
 
 //

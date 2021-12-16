@@ -4,7 +4,7 @@
 
 bool ConnectionHandler::IsColumnExisting(const char* column, const char* table)
 {
-	char statement[255];
+	char statement[MAXSTATEMENTCHARSLOWER];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "SELECT %s FROM %s", column, table);
@@ -133,6 +133,15 @@ string ConnectionHandler::GetMachineName(int id)
 	{
 		return "";
 	}
+}
+
+string ConnectionHandler::GetMachineNames()
+{
+	string name;
+
+	name = GetColumn("name");
+
+	return name;
 }
 
 vector<string> ConnectionHandler::GetMachineItems(int id)

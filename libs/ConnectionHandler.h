@@ -20,6 +20,7 @@ public:
 	// Processing functions
 
 	string GetMachineName(int id); // Get name of the machine
+	string GetMachineNames(); // Get all machine's names, returns string with machine's names separated by ';'
 	vector<string> GetMachineItems(int id); // Get all items from machine
 	map<string, int> GetAllIngredients(int id); // Get all of the ingredients to check if they are in enough quantity
 	map<string, int> GetNeededIngredients(int id, const char* product); // Get ingredients needed for product

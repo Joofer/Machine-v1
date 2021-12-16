@@ -36,9 +36,10 @@ public:
 	static void PrintConnect();
 	static void PrintPick();
 	static bool Connect(ConnectionHandler* connection);
-	static bool Pick(ConnectionHandler* connection, int& out_id);
+	static bool Pick(ConnectionHandler* connection, int& out_id); // Pick machine with id
 	static bool Create(ConnectionHandler* connection); // Create a new machine
 	static bool Delete(ConnectionHandler* connection); // Delete a machine
+	static void DisplayAll(ConnectionHandler* connection); // Display all existing machines
 
 	// In-machine runtime
 
