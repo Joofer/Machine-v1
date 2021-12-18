@@ -32,7 +32,6 @@ bool Debug::Close()
 void Debug::Log(const char* message)
 {
 	char output[MAXCHARS];
-	char date_str[255];
 	char time_str[255];
 
 	// Opening file
@@ -42,10 +41,9 @@ void Debug::Log(const char* message)
 
 	//
 
-	sprintf_s(date_str, "%s-%s-%s", Datetime::GetYear().c_str(), Datetime::GetMonth().c_str(), Datetime::GetDay().c_str());
 	sprintf_s(time_str, "%s:%s:%s", Datetime::GetHour().c_str(), Datetime::GetMin().c_str(), Datetime::GetSec().c_str());
 
-	sprintf_s(output, "[%s | %s]: %s\n", date_str, time_str, message);
+	sprintf_s(output, "[%s]: %s\n", time_str, message);
 
 	if (!instance.out_file.is_open())
 	{
