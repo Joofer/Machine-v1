@@ -200,11 +200,8 @@ bool Runtime::Buy(int id, Wallet* wallet, Machine* machine, string item, Connect
 	char date_str[255];
 	char time_str[255];
 	
-	struct tm _time;
-	time_t _time_now = time(0);
-	localtime_s(&_time, &_time_now);
-	strftime(date_str, sizeof(date_str), "%Y-%m-%d", &_time);
-	strftime(time_str, sizeof(time_str), "%X", &_time);
+	sprintf_s(date_str, "%s-%s-%s", Datetime::GetYear().c_str(), Datetime::GetMonth().c_str(), Datetime::GetDay().c_str());
+	sprintf_s(time_str, "%s:%s:%s", Datetime::GetHour().c_str(), Datetime::GetMin().c_str(), Datetime::GetSec().c_str());
 
 	//
 
@@ -240,9 +237,19 @@ bool Runtime::Buy(int id, Wallet* wallet, Machine* machine, string item, Connect
 						if (!handler->TakeIngredient(id, (i->first).c_str(), i->second))
 							cout << "Error while updating database with values: " << id << "\t" << i->first << "\t" << i->second << endl;
 
-					
+					// Logging
+
+					// Logging to database
 					if (!handler->LogPurchase(id, item.c_str(), prices.c_str(), machine->FindItem(item)->GetPrice(), date_str, time_str))
 						cout << "Error while logging purchase." << endl;
+
+					// Logging locally
+					char log_message[1000];
+
+					sprintf_s(log_message, "Machine #%i. Bought %s, prices: %s, total_price: %g.", id, item.c_str(), prices.c_str(), machine->FindItem(item)->GetPrice());
+					Debug::Log(log_message);
+
+					//
 
 					wallet->TakeMoney(machine->FindItem(item)->GetPrice());
 					error_code = -1;

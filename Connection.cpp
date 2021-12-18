@@ -253,7 +253,7 @@ int Connection::GetInt(int id, const char* name, const char* table)
 
 bool Connection::UpdateString(uint64_t id, const char* name, const char* s, const char* table)
 {
-	char statement[16384];
+	char statement[MAXSTATEMENTCHARS];
 
 	stmt = con->createStatement();
 	sprintf_s(statement, "UPDATE %s SET %s = \"%s\" WHERE id = %llu", table, name, s, id);

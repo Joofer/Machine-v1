@@ -10,7 +10,8 @@
 
 using namespace std;
 
-const uint64_t MAXSTATEMENTCHARSLOWER = 255;
+const uint16_t MAXSTATEMENTCHARS = 10000;
+const uint16_t MAXSTATEMENTCHARSLOWER = 255;
 
 class Connection
 {

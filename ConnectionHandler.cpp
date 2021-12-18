@@ -732,7 +732,7 @@ bool ConnectionHandler::DeleteItem(int id, const char* name)
 	vector<string> data_ingredients;
 	vector<string> data_ingredients_quantity;
 	vector<double> data_product_prices;
-	int pos = -1;
+	uint64_t pos = -1;
 
 	if (IsIdExisting(id))
 	{
@@ -794,7 +794,7 @@ bool ConnectionHandler::DeleteIngredient(int id, const char* name)
 	vector<string> data_quantities;
 	string quantities;
 	string ingredients;
-	int pos = -1;
+	uint64_t pos = -1;
 
 	if (IsIdExisting(id))
 	{

@@ -51,6 +51,12 @@
     <ClCompile Include="Connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Datetime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -84,6 +90,12 @@
       <Filter>Header Files\libs</Filter>
     </ClInclude>
     <ClInclude Include="libs\WendingMachine.h">
+      <Filter>Header Files\libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Debug.h">
+      <Filter>Header Files\libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Datetime.h">
       <Filter>Header Files\libs</Filter>
     </ClInclude>
   </ItemGroup>

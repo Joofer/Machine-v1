@@ -5,8 +5,8 @@
 #include "BeverageMachine.h"
 #include "WendingMachine.h"
 #include "ConnectionHandler.h"
-#include <chrono>
-#include <ctime>
+#include "Datetime.h"
+#include "Debug.h"
 #include <sstream>
 
 using namespace std;
@@ -27,7 +27,6 @@ const int MAX_INGREDIENT_QUANTITY = 100;
 
 class Runtime
 {
-private:
 public:
 	Runtime();
 

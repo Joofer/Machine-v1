@@ -6,10 +6,11 @@
 // 5. Add an ability to refill multiple items and ingredients // Done
 // 6. Edit Buy function, so it takes error_code reference     // Done
 // 7. Static runtime class                                    // Done
-// 8. Display all machines                                        // Done
+// 8. Display all machines                                    // Done
 // 9. Wallets via hash files and database                     //
-// 10. Add error logging switcher using define                //
-// 11. Remove TODO comments from Main.cpp                     //
+// 10. Add error logger                                       //
+// 11. Add error logging switcher using define                //
+// 12. Remove TODO comments from Main.cpp                     //
 
 #include "libs/CoffeeMachine.h"
 #include "libs/Wallet.h"
