@@ -205,6 +205,23 @@ bool Runtime::Buy(int id, Wallet* wallet, Machine* machine, string item, Connect
 
 	//
 
+	// Getting price
+	
+	// for (int i = 0; i < 1; i++) // For multiple products
+	// {
+	// 	sprintf_s(price, "%g", machine->FindItem(item)->GetPrice());
+	// 
+	// 	prices += price;
+	// 	if (i != 1)
+	// 		prices += ";";
+	// }
+	sprintf_s(price, "%g", machine->FindItem(item)->GetPrice());
+	prices = price;
+
+	//
+
+	Debug::Log("Trying to buy from Machine #" + to_string(id) + " item " + item + ", prices: " + prices + ", total_price: " + to_string(machine->FindItem(item)->GetPrice()) + ".");
+
 	if (machine->FindId(item) != -1)
 	{
 		if (wallet->GetMoney() < machine->FindItem(item)->GetPrice())
@@ -220,34 +237,18 @@ bool Runtime::Buy(int id, Wallet* wallet, Machine* machine, string item, Connect
 				{
 					ingredients = handler->GetNeededIngredients(id, item.c_str());
 
-					// Getting price
-					// for (int i = 0; i < 1; i++) // For multiple products
-					// {
-					// 	sprintf_s(price, "%g", machine->FindItem(item)->GetPrice());
-					// 
-					// 	prices += price;
-					// 	if (i != 1)
-					// 		prices += ";";
-					// }
-					sprintf_s(price, "%g", machine->FindItem(item)->GetPrice());
-					prices = price;
-					//
-
 					for (map<string, int>::iterator i = ingredients.begin(); i != ingredients.end(); i++)
 						if (!handler->TakeIngredient(id, (i->first).c_str(), i->second))
-							cout << "Error while updating database with values: " << id << "\t" << i->first << "\t" << i->second << endl;
+							Debug::Log("Error while updating database with values: " + to_string(id) + "\t" + i->first + "\t" + to_string(i->second));
 
 					// Logging
 
 					// Logging to database
 					if (!handler->LogPurchase(id, item.c_str(), prices.c_str(), machine->FindItem(item)->GetPrice(), date_str, time_str))
-						cout << "Error while logging purchase." << endl;
+						Debug::Log("Error while logging purchase.");
 
 					// Logging locally
-					char log_message[1000];
-
-					sprintf_s(log_message, "Machine #%i. Bought %s, prices: %s, total_price: %g.", id, item.c_str(), prices.c_str(), machine->FindItem(item)->GetPrice());
-					Debug::Log(log_message);
+					Debug::Log("Machine #" + to_string(id) + ". Bought " + item + ", prices: " + prices + ", total_price: " + to_string(machine->FindItem(item)->GetPrice()) + ".");
 
 					//
 
@@ -279,34 +280,39 @@ bool Runtime::Buy(int id, Wallet* wallet, Machine* machine, string item, Connect
 
 void Runtime::ThrowError(Error error)
 {
-	cout << "Error: ";
+	string error_str;
+
 	switch (error)
 	{
 	case Error::NOT_FOUND:
-		cout << "Item not found." << endl;
+		error_str = "Item not found.";
 		break;
 	case Error::NO_MONEY:
-		cout << "Not enough money." << endl;
+		error_str = "Not enough money.";
 		break;
 	case Error::NO_QUANTITY:
-		cout << "Not enough quantity." << endl;
+		error_str = "Not enough quantity.";
 		break;
 	case Error::NO_CONNECTION:
-		cout << "No connection with database or error while processing." << endl;
+		error_str = "No connection with database or error while processing.";
 		break;
 	case Error::ERROR_WHILE_MACHINE_CREATION:
-		cout << "Error while creating a new machine." << endl;
+		error_str = "Error while creating a new machine.";
 		break;
 	case Error::ERROR_WHILE_DELETING_MACHINE:
-		cout << "Error while deleting a machine." << endl;
+		error_str = "Error while deleting a machine.";
 		break;
 	case Error::ERROR_WHILE_LOGGING_PURCHASE:
-		cout << "Error while logging purchase." << endl;
+		error_str = "Error while logging purchase.";
 		break;
 	default:
-		cout << "Error while processing." << endl;
+		error_str = "Error while processing.";
 		break;
 	}
+
+	error_str = "Error: " + error_str;
+
+	Debug::Log(error_str.c_str(), true);
 }
 
 void Runtime::PrintName(Machine* machine)

@@ -79,7 +79,7 @@ bool Connection::ConnectToDatabase(const char* server, const char* username, con
 	}
 	catch (sql::SQLException e)
 	{
-		cout << "Could not connect to server. Error: " << e.what() << endl;
+		Debug::Log("Could not connect to server. Error: " + string(e.what()), true);
 
 		if (e.getErrorCode() != 1045) // Exit only on crucial errors
 			exit(1); // Error 1 represents connection error
@@ -89,17 +89,17 @@ bool Connection::ConnectToDatabase(const char* server, const char* username, con
 
 	if (!CheckDBStructure())
 	{
-		cout << "Error while checking database structure. Creating datatable..." << endl;
+		Debug::Log("Error while checking database structure. Creating datatable...");
 
 		if (!ConstructDataTable(true)) // In this case we use purchase logging so we need to set checkPurchases to true
 		{
-			cout << "Error while creating datatable. Additional manual data check and correction may be needed. Full program reload is recommended." << endl;
+			Debug::Log("Error while creating datatable. Additional manual data check and correction may be needed. Full program reload is recommended.");
 
 			return false;
 		}
 		else
 		{
-			cout << "Datatable created." << endl;
+			Debug::Log("Datatable created.");
 
 			return true;
 		}

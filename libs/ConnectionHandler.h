@@ -3,6 +3,7 @@
 #include "Machine.h"
 #include "Connection.h"
 #include "DataProcessing.h"
+#include "Debug.h"
 
 using namespace std;
 

@@ -35,16 +35,20 @@ int main()
 	bool isConnected = false;
 	bool isPicked = false;
 
-	// if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "YEAH!121_@YEAH!121_@", "database0")) // Connecting to database automatically
-	// {
-	// 	isConnected = true;
-	// }
+	Debug::Start(); // Enable logging
+
+	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "YEAH!121_@YEAH!121_@", "database0")) // Connecting to database automatically
+	{
+		isConnected = true;
+		Debug::Log("Connected to database.");
+	}
 
 	while (!isConnected) // Connecting to database
 	{
 		Runtime::PrintConnect();
 
-		cin >> action;
+		if (!dp::read_string(action))
+			Debug::Log("Error while reading string action.", true);
 
 		switch (action[0])
 		{
@@ -71,7 +75,8 @@ int main()
 	{
 		Runtime::PrintPick();
 
-		cin >> action;
+		if (!dp::read_string(action))
+			Debug::Log("Error while reading string action.", true);
 
 		switch (action[0])
 		{
@@ -113,7 +118,8 @@ int main()
 		}
 
 		Runtime::PrintMain();
-		cin >> action;
+		if (!dp::read_string(action))
+			Debug::Log("Error while reading string action.", true);
 
 		switch (action[0])
 		{
@@ -142,7 +148,8 @@ int main()
 
 		case '1':
 			Runtime::PrintManage(1);
-			cin >> action;
+			if (!dp::read_string(action))
+				Debug::Log("Error while reading string action.", true);
 
 			switch (action[0])
 			{
@@ -182,7 +189,8 @@ int main()
 
 		case '2':
 			Runtime::PrintManage(2);
-			cin >> action;
+			if (!dp::read_string(action))
+				Debug::Log("Error while reading string action.", true);
 
 			switch (action[0])
 			{
@@ -230,10 +238,16 @@ bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, M
 	vector<MachineItem> items;
 
 	if (!connection->Check()) // Checking connection
+	{
+		Debug::Log("Error while checking connection.", true);
 		return false;
+	}
 
 	if (!connection->IsIdExisting(machine_id))
+	{
+		Debug::Log("Error while checking machine ID. Provided ID: " + to_string(machine_id) + ".", true);
 		return false;
+	}
 
 	machine->ClearData(); // Clear local data
 
@@ -244,7 +258,7 @@ bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, M
 
 	if (products.size() != quantity.size() || quantity.size() != product_prices.size())
 	{
-		cout << "Error while getting data." << endl;
+		Debug::Log("Error while getting data.", true);
 		return false;
 	}
 
@@ -258,6 +272,7 @@ bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, M
 	machine->Add(items.begin(), items.end()); // Loading up the machine
 
 	// cout << "Data loaded." << endl;
+	Debug::Log("Data updated.");
 
 	return true;
 }
