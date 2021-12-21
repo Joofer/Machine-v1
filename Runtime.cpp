@@ -39,29 +39,44 @@ bool Runtime::Connect(ConnectionHandler* connection)
 	string password;
 	string database;
 
+	Debug::Log("Connecting to machine...", true);
+
 	cout << "Server: ";
 	if (!dp::read_string(server))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	cout << "User: ";
 	if (!dp::read_string(user))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	cout << "Password: ";
 	if (!dp::read_string(password))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	cout << "Database: ";
 	if (!dp::read_string(database))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	if (connection->ConnectToDatabase(server.c_str(), user.c_str(), password.c_str(), database.c_str())) // Connecting to database
 	{
+		Debug::Log("Successfully connected.");
 		return true;
 	}
 	else
 	{
-		cout << "Error while connecting to machine." << endl;
+		Debug::Log("Error while connecting to machine.", true);
 		return false;
 	}
 }
@@ -70,18 +85,24 @@ bool Runtime::Pick(ConnectionHandler* connection, int& out_id)
 {
 	int id;
 
+	Debug::Log("Picking machine...");
+
 	cout << "Machine id: ";
 	if (!dp::read_int(id))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	if (connection->IsIdExisting(id))
 	{
 		out_id = id;
+		Debug::Log("Machine #" + to_string(id) + " was successfully picked.");
 		return true;
 	}
 	else
 	{
-		cout << "Machine with ID " << id << " doesn't exist." << endl;
+		Debug::Log("Machine with ID " + to_string(id) + " doesn't exist.");
 		return false;
 	}
 }
@@ -93,20 +114,31 @@ bool Runtime::Create(ConnectionHandler* connection)
 	string name;
 	string type;
 
+	Debug::Log("Creating new machine...");
+
 	cout << "=====================================" << endl
 		<< "\t\tCREATE NEW MACHINE" << endl
 		<< "=====================================" << endl;
 
 	cout << "Machine name: ";
 	if (!dp::read_string(name))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	cout << "Machine type (Beverage Machine - 1, Coffee Machine - 2, Wending Machine - 3): ";
 	if (!dp::read_int(temp_type))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	if (temp_type < 1 || temp_type > 3)
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	switch (temp_type)
 	{
@@ -127,19 +159,18 @@ bool Runtime::Create(ConnectionHandler* connection)
 	{
 		if (id != -1)
 		{
-			cout << "Machine created. Machine's id: " << id << "." << endl;
-
+			Debug::Log("Machine was successfully created. Machine's id: " + to_string(id) + ".", true);
 			return true;
 		}
 		else
 		{
-			cout << "id = -1" << endl;
+			Debug::Log("Processing error, action aborted.", true);
 			return false;
 		}
 	}
 	else
 	{
-		cout << "on creating error" << endl;
+		Debug::Log("Processing error, action aborted.", true);
 		return false;
 	}
 }
@@ -148,26 +179,31 @@ bool Runtime::Delete(ConnectionHandler* connection)
 {
 	int id;
 
+	Debug::Log("Deleting machine...");
+
 	cout << "Machine id: ";
 	if (!dp::read_int(id))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 	
 	if (connection->IsIdExisting(id))
 	{
 		if (connection->DeleteMachine(id))
 		{
+			Debug::Log("Machine #" + to_string(id) + " was successfully deleted.", true);
 			return true;
 		}
 		else
 		{
-			cout << "Error while deleting machine." << endl;
-
+			Debug::Log("Error while deleting machine # " + to_string(id) + ".", true);
 			return false;
 		}
 	}
 	else
 	{
-		cout << "Machine with ID " << id << " doesn't exist." << endl;
+		Debug::Log("Machine with ID " + to_string(id) + " doesn't exist.");
 		return false;
 	}
 
@@ -450,7 +486,6 @@ void Runtime::PrintIngredients(Machine* machine)
 	if (typeid(*machine) != typeid(CoffeeMachine))
 	{
 		ThrowError(Error::NO_CONNECTION);
-
 		return;
 	}
 
@@ -479,13 +514,27 @@ bool Runtime::SetName(int id, Machine* machine, ConnectionHandler* handler)
 {
 	string name;
 
+	Debug::Log("Setting up new name for machine #" + to_string(id) + "...");
+
 	PrintName(machine);
 
 	cout << "New name: ";
 	if (!dp::read_string(name))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
-	return handler->SetName(id, name.c_str());
+	if (handler->SetName(id, name.c_str()))
+	{
+		Debug::Log("Successfully set up new name \"" + name + "\" for machine #" + to_string(id) + ".");
+		return true;
+	}
+	else
+	{
+		Debug::Log("Error while setting up new name for machine #" + to_string(id) + ".");
+		return false;
+	}
 }
 
 bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
@@ -504,12 +553,17 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 	int product_quantity;
 	double product_price;
 
+	Debug::Log("Adding new product for machine #" + to_string(id) + "...");
+
 	cout << "=====================================" << endl
 		<< "\tADD PRODUCT:" << endl;
 
 	cout << "Product type (Beverage Machine - 1, Coffee Machine - 2, Wending Machine - 3): ";
 	if (!dp::read_int(product_type_number))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	switch (product_type_number)
 	{
@@ -523,13 +577,16 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 		product_type = "wending_machine";
 		break;
 	default:
-		cout << "Error: unknown product type." << endl;
+		Debug::Log("Input error, action aborted.", true);
 		return false;
 	}
 	
 	cout << "Product name: ";
 	if (!dp::read_string(product_name))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	product_name = dp::remove_from(product_name, ','); // Deleting delimiter characters from product_name
 	product_name = dp::remove_from(product_name, ';'); // if they were typed
@@ -539,7 +596,6 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 		if (typeid(*machine) != typeid(CoffeeMachine))
 		{
 			ThrowError(Error::NO_CONNECTION);
-
 			return false;
 		}
 
@@ -547,7 +603,10 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 
 		cout << "Ingredients quantity: ";
 		if (!dp::read_int(product_ingredients_count))
+		{
+			Debug::Log("Input error, action aborted.", true);
 			return false;
+		}
 
 		PrintIngredients(machine);
 
@@ -555,7 +614,10 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 		{
 			cout << "Ingredient index " << i + 1 << ": ";
 			if (!dp::read_int(ingredient_index))
+			{
+				Debug::Log("Input error, action aborted.", true);
 				return false;
+			}
 
 			if (ingredient_index <= ingredients.size() && ingredient_index > 0)
 			{
@@ -565,7 +627,7 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 			}
 			else
 			{
-				cout << "Error while picking ingredient." << endl;
+				Debug::Log("Error while picking ingredient.", true);
 				return false; // ingredient_index is a too big or a too small value
 			}
 
@@ -576,10 +638,16 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 
 			cout << "Quantity: ";
 			if (!dp::read_int(product_ingredient_quantity_temp))
+			{
+				Debug::Log("Input error, action aborted.", true);
 				return false;
+			}
 
 			if (product_ingredient_quantity_temp <= 0 || product_ingredient_quantity_temp >= MAX_INGREDIENT_QUANTITY) // Check if ingredient quantity input is correct
+			{
+				Debug::Log("Ingredient quantity is incorrect.", true);
 				return false;
+			}
 
 			if (i != product_ingredients_count - 1)
 				product_ingredient_quantities = product_ingredient_quantities + to_string(product_ingredient_quantity_temp) + ",";
@@ -591,19 +659,34 @@ bool Runtime::AddProduct(int id, Machine* machine, ConnectionHandler* handler)
 
 	cout << "Product quantity: ";
 	if (!dp::read_int(product_quantity))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	cout << "Product price: ";
 	if (!dp::read_double(product_price))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	if (product_quantity > 0 && product_quantity < MAX_ITEM_QUANTITY)
 	{
-		return handler->AddItem(id, product_type, product_name, product_ingredients, product_ingredient_quantities, to_string(product_quantity), to_string(product_price));
+		if (handler->AddItem(id, product_type, product_name, product_ingredients, product_ingredient_quantities, to_string(product_quantity), to_string(product_price)))
+		{
+			Debug::Log("Successfully added new product \"" + product_name + "\" for machine #" + to_string(id) + ".", true);
+			return true;
+		}
+		else
+		{
+			Debug::Log("Error while adding new product \"" + product_name + "\" for machine #" + to_string(id) + ".", true);
+			return false;
+		}
 	}
 	else
 	{
-		cout << "Error while adding product. Product quantity should be >0 and <" << MAX_ITEM_QUANTITY << "." << endl;
+		Debug::Log("Error while adding product. Product quantity should be >0 and <" + to_string(MAX_ITEM_QUANTITY) + ".", true);
 		return false;
 	}
 }
@@ -614,10 +697,11 @@ bool Runtime::AddIngredient(int id, Machine* machine, ConnectionHandler* handler
 	string ingredient_name;
 	int ingredient_quantity;
 
+	Debug::Log("Adding new ingredients for machine #" + to_string(id) + ".");
+
 	if (typeid(*machine) != typeid(CoffeeMachine))
 	{
 		ThrowError(Error::NO_CONNECTION);
-
 		return false;
 	}
 
@@ -630,27 +714,42 @@ bool Runtime::AddIngredient(int id, Machine* machine, ConnectionHandler* handler
 
 	cout << "Ingredient name: ";
 	if (!dp::read_string(ingredient_name))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	ingredient_name = dp::remove_from(ingredient_name, ','); // Deleting delimiter characters from ingredient_name
 	ingredient_name = dp::remove_from(ingredient_name, ';'); // if they were typed
 
 	cout << "Ingredient quantity: ";
 	if (!dp::read_int(ingredient_quantity))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	for (map<string, int>::iterator i = ingredients.begin(); i != ingredients.end(); i++)
 	{
 		if (i->first == ingredient_name)
 		{
-			cout << "Error while adding ingredient. Ingredient already exists." << endl;
+			Debug::Log("Error while adding ingredient. Ingredient already exists.", true);
 			return false;
 		}
 	}
 
 	if (ingredient_quantity > 0 && ingredient_quantity < MAX_INGREDIENT_QUANTITY)
 	{
-		return handler->AddIngredient(id, ingredient_name, to_string(ingredient_quantity));
+		if (handler->AddIngredient(id, ingredient_name, to_string(ingredient_quantity)))
+		{
+			Debug::Log("Successfully added ingredient \"" + ingredient_name + "\" for machine #" + to_string(id) + ".", true);
+			return true;
+		}
+		else
+		{
+			Debug::Log("Error while adding ingredient \"" + ingredient_name + "\" for machine #" + to_string(id) + ".", true);
+			return false;
+		}
 	}
 	else
 	{
@@ -669,26 +768,32 @@ bool Runtime::RefillItem(int id, Machine* machine, ConnectionHandler* handler)
 	string item;
 	int quantity;
 
+	Debug::Log("Refilling items for machine #" + to_string(id) + "...");
+
 	products = handler->GetMachineItems(id);
 
 	PrintProducts(machine);
 
 	cout << "Item index or indexes (separated with ','): ";
 	if (!dp::read_string(item_indexes))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	indexes = dp::split(dp::remove_from(item_indexes, ' '), ",");
 
 	for (int i = 0; i < indexes.size(); i++)
 	{
+		Debug::Log("Refilling item #" + to_string(i + 1) + "...");
+
 		try
 		{
 			index = stoi(indexes[i]);
 		}
 		catch (exception e)
 		{
-			cout << i + 1 << ". Index should be a number. You typed: " << indexes[i] << "." << endl;
-
+			Debug::Log(to_string(i + 1) + ". Index should be a number. You typed: " + indexes[i] + ".", true);
 			continue;
 		}
 
@@ -702,39 +807,36 @@ bool Runtime::RefillItem(int id, Machine* machine, ConnectionHandler* handler)
 			cout << i + 1 << ". Add quantity of " << item << ": ";
 			if (!dp::read_int(quantity)) // There may be some checking
 			{
-				cout << "Incorrect input." << endl;
-
-				continue;
+				Debug::Log("Input error, action aborted.", true);
+				return false;
 			}
 
 			if (quantity > 0 && machine->GetItemById(index - 1)->GetQuantity() + quantity < MAX_ITEM_QUANTITY)
 			{
 				if (handler->TakeItem(id, item.c_str(), -quantity))
 				{
-					cout << "Refilled item " << item << "." << endl;
+					Debug::Log("Refilled item " + item + " with value " + to_string(quantity) + ".", true);
 				}
 				else
 				{
-					cout << "Error while refilling item " << item << "." << endl;
-
+					Debug::Log("Error while refilling item " + item + ".", true);
 					continue;
 				}
 			}
 			else
 			{
-				cout << "Too high or too small quantity of " << item << " to be added. Minimum quantity allowed to be added is 1 and maximum is " << MAX_ITEM_QUANTITY - machine->GetItemById(index - 1)->GetQuantity() - 1 << "." << endl;
-
+				Debug::Log("Too high or too small quantity of " + item + " to be added. Minimum quantity allowed to be added is 1 and maximum is " + to_string(MAX_ITEM_QUANTITY - machine->GetItemById(index - 1)->GetQuantity() - 1) + ".", true);
 				continue;
 			}
 		}
 		else
 		{
-			cout << i + 1 << ". Item with index " << index << " not found." << endl;
-
+			Debug::Log(to_string(i + 1) + ". Item with index " + to_string(index) + " not found.", true);
 			continue; // item index is a too big or a too small value
 		}
 	}
 
+	Debug::Log("Successfully refilled items for machine #" + to_string(id) + ".");
 	return true;
 }
 
@@ -748,10 +850,11 @@ bool Runtime::RefillIngredient(int id, Machine* machine, ConnectionHandler* hand
 	string ingredient;
 	int quantity;
 
+	Debug::Log("Refilling ingredients for machine #" + to_string(id) + "...");
+
 	if (typeid(*machine) != typeid(CoffeeMachine))
 	{
 		ThrowError(Error::NO_CONNECTION);
-
 		return false;
 	}
 
@@ -761,20 +864,24 @@ bool Runtime::RefillIngredient(int id, Machine* machine, ConnectionHandler* hand
 
 	cout << "Ingredient index or indexes (separated with ','): ";
 	if (!dp::read_string(ingredient_indexes))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	indexes = dp::split(dp::remove_from(ingredient_indexes, ' '), ",");
 
 	for (int i = 0; i < indexes.size(); i++)
 	{
+		Debug::Log("Refilling item #" + to_string(i + 1) + "...");
+
 		try
 		{
 			index = stoi(indexes[i]);
 		}
 		catch (exception e)
 		{
-			cout << i + 1 << ". Index should be a number. You typed: " << indexes[i] << "." << endl;
-
+			Debug::Log(to_string(i + 1) + ". Index should be a number. You typed: " + indexes[i] + ".", true);
 			continue;
 		}
 
@@ -788,39 +895,36 @@ bool Runtime::RefillIngredient(int id, Machine* machine, ConnectionHandler* hand
 			cout << i + 1 << ". Add quantity of " << ingredient << ": ";
 			if (!dp::read_int(quantity)) // There may be some checking
 			{
-				cout << "Incorrect input." << endl;
-
-				continue;
+				Debug::Log("Input error, action aborted.", true);
+				return false;
 			}
 
 			if (quantity > 0 && ingredients[iter->first] + quantity < MAX_INGREDIENT_QUANTITY) // Check if ingredient quantity input is correct
 			{
 				if (handler->TakeIngredient(id, (iter->first).c_str(), -quantity))
 				{
-					cout << "Refilled ingredient " << ingredient << "." << endl;
+					Debug::Log("Refilled ingredient " + ingredient + " with value " + to_string(quantity) + ".", true);
 				}
 				else
 				{
-					cout << "Error while refilling ingredient " << ingredient << "." << endl;
-
+					Debug::Log("Error while refilling ingredient " + ingredient + ".", true);
 					continue;
 				}
 			}
 			else
 			{
-				cout << "Too high or too small quantity of " << ingredient << " to be added. Minimum quantity allowed to be added is 1 and maximum is " << MAX_INGREDIENT_QUANTITY - iter->second - 1 << "." << endl;
-
+				Debug::Log("Too high or too small quantity of " + ingredient + " to be added. Minimum quantity allowed to be added is 1 and maximum is " + to_string(MAX_INGREDIENT_QUANTITY - iter->second - 1) + ".", true);
 				continue;
 			}
 		}
 		else
 		{
-			cout << i + 1 << ". Ingredient with index " << index << " not found." << endl;
-
+			Debug::Log(to_string(i + 1) + ". Ingredient with index " + to_string(index) + " not found.", true);
 			continue; // ingredient index is a too big or a too small value
 		}
 	}
 
+	Debug::Log("Successfully refilled ingredients for machine #" + to_string(id) + ".");
 	return true;
 }
 
@@ -828,14 +932,28 @@ bool Runtime::RemoveProduct(int id, Machine* machine, ConnectionHandler* handler
 {
 	int item_index = 0;
 
+	Debug::Log("Removing item from machine #" + to_string(id) + "...");
+
 	PrintProducts(machine);
 	cout << endl;
 
 	cout << "Item index: ";
 	if (!dp::read_int(item_index))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
-	return handler->DeleteItem(id, (machine->GetItemById(item_index - 1)->Get()).c_str()); // Decreasing iterator position by item_index picked - 1, as earlier it was increased
+	if (handler->DeleteItem(id, (machine->GetItemById(item_index - 1)->Get()).c_str())) // Decreasing iterator position by item_index picked - 1, as earlier it was increased
+	{
+		Debug::Log("Successfully removed item \"" + machine->GetItemById(item_index - 1)->Get() + "\" from machine #" + to_string(id) + ".", true);
+		return true;
+	}
+	else
+	{
+		Debug::Log("Error while removing item \"" + machine->GetItemById(item_index - 1)->Get() + "\" from machine #" + to_string(id) + ".", true);
+		return false;
+	}
 }
 
 bool Runtime::RemoveIngredient(int id, Machine* machine, ConnectionHandler* handler)
@@ -844,10 +962,11 @@ bool Runtime::RemoveIngredient(int id, Machine* machine, ConnectionHandler* hand
 	map<string, int>::iterator iter;
 	int ingredient_index;
 
+	Debug::Log("Removing ingredient from machine #" + to_string(id) + "...");
+
 	if (typeid(*machine) != typeid(CoffeeMachine))
 	{
 		ThrowError(Error::NO_CONNECTION);
-
 		return false;
 	}
 
@@ -857,17 +976,30 @@ bool Runtime::RemoveIngredient(int id, Machine* machine, ConnectionHandler* hand
 
 	cout << "Ingredient index: ";
 	if (!dp::read_int(ingredient_index))
+	{
+		Debug::Log("Input error, action aborted.", true);
 		return false;
+	}
 
 	if (ingredient_index <= ingredients.size() && ingredient_index > 0)
 	{
 		iter = ingredients.begin(); // Setting up iterator
 		advance(iter, ingredient_index - 1); // Decreasing iterator position by ingredient_index picked - 1, as earlier it was increased
 
-		return handler->DeleteIngredient(id, (iter->first).c_str());
+		if (handler->DeleteIngredient(id, (iter->first).c_str()))
+		{
+			Debug::Log("Sucessfully removed ingredient \"" + iter->first + "\" from machine #" + to_string(id) + ".", true);
+			return true;
+		}
+		else
+		{
+			Debug::Log("Error while removing ingredient \"" + iter->first + "\" from machine #" + to_string(id) + ".", true);
+			return false;
+		}
 	}
 	else
 	{
+		Debug::Log("Ingredient index was input incorrectly.", true);
 		return false; // ingredient_index is a too big or a too small value
 	}
 }
