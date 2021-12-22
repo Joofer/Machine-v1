@@ -71,6 +71,8 @@ bool Connection::ConstructDataTable(bool checkPurchases)
 
 bool Connection::ConnectToDatabase(const char* server, const char* username, const char* password, const char* database)
 {
+	Debug::Log("Connecting to database server...");
+
 	try
 	{
 		driver = get_driver_instance();
@@ -104,6 +106,8 @@ bool Connection::ConnectToDatabase(const char* server, const char* username, con
 			return true;
 		}
 	}
+
+	Debug::Log("Successfully connected to database.");
 
 	return true;
 }
