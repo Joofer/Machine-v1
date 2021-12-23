@@ -71,8 +71,6 @@ bool Connection::ConstructDataTable(bool checkPurchases)
 
 bool Connection::ConnectToDatabase(const char* server, const char* username, const char* password, const char* database)
 {
-	Debug::Log("Connecting to database server...");
-
 	try
 	{
 		driver = get_driver_instance();
@@ -81,7 +79,7 @@ bool Connection::ConnectToDatabase(const char* server, const char* username, con
 	}
 	catch (sql::SQLException e)
 	{
-		Debug::Log("Could not connect to server. Error: " + string(e.what()), true);
+		cout << "Could not connect to server. Error: " << e.what() << endl;
 
 		if (e.getErrorCode() != 1045) // Exit only on crucial errors
 			exit(1); // Error 1 represents connection error
@@ -91,23 +89,19 @@ bool Connection::ConnectToDatabase(const char* server, const char* username, con
 
 	if (!CheckDBStructure())
 	{
-		Debug::Log("Error while checking database structure. Creating datatable...");
+		cout << "Error while checking database structure. Creating datatable..." << endl;
 
 		if (!ConstructDataTable(true)) // In this case we use purchase logging so we need to set checkPurchases to true
 		{
-			Debug::Log("Error while creating datatable. Additional manual data check and correction may be needed. Full program reload is recommended.");
+			cout << "Error while creating datatable. Additional manual data check and correction may be needed. Full program reload is recommended." << endl;
 
 			return false;
 		}
 		else
 		{
-			Debug::Log("Datatable created.");
-
 			return true;
 		}
 	}
-
-	Debug::Log("Successfully connected to database.");
 
 	return true;
 }
