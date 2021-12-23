@@ -37,79 +37,86 @@ int main()
 
 	Debug::Start(); // Enable logging
 
+	Debug::Log("Connecting to database server...");
 	if (connection->ConnectToDatabase("tcp://joofer.mysql.database.azure.com:3306", "user", "YEAH!121_@YEAH!121_@", "database0")) // Connecting to database automatically
 	{
+		Debug::Log("Successfully connected to database server.");
 		isConnected = true;
 	}
-
-	while (!isConnected) // Connecting to database
-	{
-		Runtime::PrintConnect();
-
-		if (!dp::read_string(action))
-			Debug::Log("Error while reading string action.", true);
-
-		switch (action[0])
-		{
-		case '1':
-			if (Runtime::Connect(connection))
-				isConnected = true;
-			break;
-
-		case 'x':
-			exit(0);
-			break;
-
-		default:
-			continue;
-		}
-	}
-
-	// if (connection->CreateMachine("ChunkyCup", "coffee_machine", machine_id))
-	// {
-	// 	isPicked = true;
-	// }
-
-	while (!isPicked)
-	{
-		Runtime::PrintPick();
-
-		if (!dp::read_string(action))
-			Debug::Log("Error while reading string action.", true);
-
-		switch (action[0])
-		{
-		case '1':
-			if (Runtime::Pick(connection, machine_id))
-				isPicked = true;
-			break;
-
-		case '2':
-			if (!Runtime::Create(connection))
-				Runtime::ThrowError(Error::ERROR_WHILE_MACHINE_CREATION); // Error while creating a new machine
-			break;
-		case '3':
-			if (!Runtime::Delete(connection))
-				Runtime::ThrowError(Error::NO_CONNECTION); // Error while deleting machine
-			break;
-		case '4':
-			Runtime::DisplayAll(connection);
-			break;
-		case 'x':
-			exit(0);
-			break;
-
-		default:
-			continue;
-		}
-	}
-
-	// cout << "Connected to database. Loading data." << endl;
 
 	wallet->SetMoney(100); // Set up the wallet, it has to be done in the main function as it should be called only once
 
 	while (action[0] != 'x')
 	{
+		// Connecting to database
+
+		while (!isConnected) // Connecting to database
+		{
+			Runtime::PrintConnect();
+
+			if (!dp::read_string(action))
+				Debug::Log("Error while reading string action.", true);
+
+			switch (action[0])
+			{
+			case '1':
+				if (Runtime::Connect(connection))
+					isConnected = true;
+				break;
+
+			case 'x':
+				exit(0);
+				break;
+
+			default:
+				continue;
+			}
+		}
+
+		// Picking machine
+		
+		// if (connection->CreateMachine("ChunkyCup", "coffee_machine", machine_id))
+		// {
+		// 	isPicked = true;
+		// }
+
+		while (!isPicked)
+		{
+			Runtime::PrintPick();
+
+			if (!dp::read_string(action))
+				Debug::Log("Error while reading string action.", true);
+
+			switch (action[0])
+			{
+			case '1':
+				if (Runtime::Pick(connection, machine_id))
+					isPicked = true;
+				break;
+
+			case '2':
+				if (!Runtime::Create(connection))
+					Runtime::ThrowError(Error::ERROR_WHILE_MACHINE_CREATION); // Error while creating a new machine
+				break;
+			case '3':
+				if (!Runtime::Delete(connection))
+					Runtime::ThrowError(Error::NO_CONNECTION); // Error while deleting machine
+				break;
+			case '4':
+				Runtime::DisplayAll(connection);
+				break;
+			case 'x':
+				exit(0);
+				break;
+
+			default:
+				continue;
+			}
+		}
+
+		// cout << "Connected to database. Loading data." << endl;
+		//
+
 		if (!UpdateData(machine_id, connection, wallet, machine)) // Update machine
 		{
 			cout << "Error while updating the data." << endl;
@@ -216,6 +223,15 @@ int main()
 				break;
 			}
 
+			break;
+
+		case '3':
+			isPicked = false;
+			break;
+
+		case '4':
+			isPicked = false;
+			isConnected = false;
 			break;
 
 		default:

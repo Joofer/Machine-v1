@@ -39,7 +39,7 @@ bool Runtime::Connect(ConnectionHandler* connection)
 	string password;
 	string database;
 
-	Debug::Log("Connecting to machine...", true);
+	Debug::Log("Connecting to database...");
 
 	cout << "Server: ";
 	if (!dp::read_string(server))
@@ -71,7 +71,7 @@ bool Runtime::Connect(ConnectionHandler* connection)
 
 	if (connection->ConnectToDatabase(server.c_str(), user.c_str(), password.c_str(), database.c_str())) // Connecting to database
 	{
-		Debug::Log("Successfully connected.");
+		Debug::Log("Successfully connected to database " + database + " from server " + server + ".");
 		return true;
 	}
 	else
@@ -376,6 +376,9 @@ void Runtime::PrintMain()
 		<< "" << endl
 		<< "1\tManage machine" << endl
 		<< "2\tManage ingredients" << endl
+		<< "" << endl
+		<< "3\tBack to machines menu" << endl
+		<< "4\tBack to database menu" << endl
 		<< "" << endl
 		<< "x\tExit machine" << endl
 		<< "=====================================" << endl;
