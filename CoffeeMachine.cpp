@@ -25,7 +25,7 @@ bool CoffeeMachine::Take(string item)
 		if (FindItem(item)->GetQuantity() >= 1)
 		{
 			// cout << "Item quantity >= 1" << endl;
-			if (Check() == "")
+			if (Check(item) == "")
 			{
 				// cout << "Ingredients are in enough quantity" << endl;
 				for (map<string, int>::iterator i = FindItem(item)->ingredients_needed.begin(); i != FindItem(item)->ingredients_needed.end(); i++)
@@ -82,18 +82,40 @@ bool CoffeeMachine::TakeIngredient(string ingredient, int value)
 		return false;
 	}
 }
-string CoffeeMachine::Check()
+string CoffeeMachine::Check(string item)
 {
-	// for (vector<MachineItem>::iterator i = items.begin(); i != items.end(); i++)
-	// {
-	// 	if (i->GetQuantity() <= 0)
-	// 		return i->Get();
-	// }
-	for (map<string, int>::iterator i = coffee_ingredients.begin(); i != coffee_ingredients.end(); i++)
+	if (item.empty())
 	{
-		if (i->second <= 0)
+		for (map<string, int>::iterator i = coffee_ingredients.begin(); i != coffee_ingredients.end(); i++)
 		{
-			return i->first;
+			if (i->second <= 0)
+			{
+				return i->first;
+			}
+		}
+	}
+	else
+	{
+		if (FindItem(item)->Get() != "N/A") // Checking if item exists
+		{
+			for (map<string, int>::iterator i = FindItem(item)->ingredients_needed.begin(); i != FindItem(item)->ingredients_needed.end(); i++)
+			{
+				if (coffee_ingredients.contains(i->first))
+				{
+					if (coffee_ingredients[i->first] < i->second)
+					{
+						return i->first;
+					}
+				}
+				else
+				{
+					return "N/F";
+				}
+			}
+		}
+		else
+		{
+			return "N/F";
 		}
 	}
 	return "";
