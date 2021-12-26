@@ -244,10 +244,10 @@ int main()
 
 bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, Machine* machine)
 {
-	vector<string> products = connection->GetMachineItems(machine_id);
-	vector<map<string, int>> ingredients = connection->GetMachineIngredientsVector(machine_id);
-	vector<int> quantity = connection->GetItemQuantities(machine_id);
-	vector<double> product_prices = connection->GetItemPrices(machine_id);
+	vector<string> products;
+	vector<map<string, int>> ingredients;
+	vector<int> quantity;
+	vector<double> product_prices;
 
 	MachineItem* temp_item;
 	vector<MachineItem> items;
@@ -263,6 +263,11 @@ bool UpdateData(int machine_id, ConnectionHandler* connection, Wallet* wallet, M
 		Debug::Log("Error while checking machine ID. Provided ID: " + to_string(machine_id) + ".", true);
 		return false;
 	}
+
+	products = connection->GetMachineItems(machine_id);
+	ingredients = connection->GetMachineIngredientsVector(machine_id);
+	quantity = connection->GetItemQuantities(machine_id);
+	product_prices = connection->GetItemPrices(machine_id);
 
 	machine->ClearData(); // Clear local data
 
