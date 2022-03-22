@@ -29,14 +29,3 @@ string item = "Cappuccino";
 int error; // Variable for storing errors
 Runtime::Buy(id, wallet, coffee_machine, item, connection, error); // Buy an item, sets error code to the error variable, -1 if succeed
 ```
-# List of functions
-Machine() - Create a new machine
-CoffeeMachine(), BeverageMachine(), WendingMachine() - Create a new specific machine
-| Set | Get |
-|----------------|---------|
-| SetName(string) - Set name for machine. Arguments: name | GetName() - Get name of machine. Return: string |
-| Add(string, int) - Add a new item to machine. Arguments: item, value (count) | Find(string) - Get item's value (count). Arguments: name. Return: int |
-| Take(string, int) - Take some items. Arguments: item, value (count). Return: true/false (bool) | Check() - Check ingredients to be in an enough amount. Return: string (which of the ingredients is missing, key of items map) |
-| Delete(string) - Delete an item. Arguments: name. Return true/false (bool) |  |
-| Change(string, int) - Change item count. Arguments: item, value (count). Return: true/false (bool) |  |
-______
